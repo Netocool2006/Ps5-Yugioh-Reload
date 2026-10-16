@@ -33,5 +33,5 @@ d["assets"].append({"path": "models/yugi", "from": "file", "source": "ps5/assets
     "url": "-"})
 json.dump(d, open(p, "w"), indent=2, ensure_ascii=False)
 PY
-cp "$src/sce_sys/icon0.png" "$t/ps5/sce_sys/icon0.png"
+cp "${assets%/assets}/sce_sys/icon0.png" "$t/ps5/sce_sys/icon0.png"   # el icono no va al repo
 echo "sincronizado en $t"
