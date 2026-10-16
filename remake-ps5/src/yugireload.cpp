@@ -105,19 +105,55 @@ const glm::vec4 OJO_KURIBOH_A{ -0.1050f, 0.5560f, 0.3450f, 0.085f };   // Kuribo
 // Enfrentamientos (motor de reglas, Excel del usuario): quien ataca a quien. Los "en juego" se turnan en la PS5;
 // todos se pueden ver en el PC con YUGI_DUELO=n. Los personajes con esqueleto (Mago, Maga, Guardian) usan su
 // codigo propio; los demas, su regla (reglas/regla_*.h, por la tabla generada desde reglas_combate.json)
+// Regla del usuario: nadie ataca a su propio lado del tablero, solo a un monstruo del otro lado (MONSTRUOS[].rival
+// distinto). elegirDuelo salta los pares invalidos y los que tienen una carta que todavia no esta en la escena, asi
+// la lista puede nombrar cartas que se agregan despues. El Guardian todavia no ataca (personaje con esqueleto)
 struct Enfrentamiento { const char* atacante; const char* objetivo; bool enJuego; };
 const Enfrentamiento ENFRENTAMIENTOS[] = {
+	// lado del jugador -> lado del rival
 	{ "dark_magician", "celtic_guardian", true },
 	{ "dark_magician_girl", "celtic_guardian", true },
 	{ "red_eyes", "celtic_guardian", false },
 	{ "baby_dragon", "celtic_guardian", false },
 	{ "kuriboh", "celtic_guardian", false },
-	{ "dark_magician", "red_eyes", false },
-	{ "dark_magician_girl", "baby_dragon", false },
-	{ "dark_magician", "kuriboh", false },
-	{ "red_eyes", "dark_magician", false },        // regla 3: el mistico se defiende con el baculo
-	{ "kuriboh", "dark_magician_girl", false },
+	{ "dark_magician", "oni_tank_t_34", false },
+	{ "dark_magician_girl", "blue_eyes", false },
+	{ "dark_magician", "silver_fang", false },
+	{ "dark_magician_girl", "faith_bird", false },
+	{ "dark_magician", "deepsea_shark", false },
+	{ "dark_magician_girl", "stone_ogre_grotto", false },
+	{ "dark_magician", "summoned_skull", false },
+	{ "dark_magician_girl", "oni_tank_t_34", false },
+	{ "dark_magician", "blue_eyes", false },
+	{ "dark_magician_girl", "silver_fang", false },
+	{ "dark_magician", "faith_bird", false },
+	{ "dark_magician_girl", "deepsea_shark", false },
+	{ "dark_magician", "stone_ogre_grotto", false },
+	{ "dark_magician_girl", "summoned_skull", false },
+	// lado del rival -> lado del jugador
+	{ "oni_tank_t_34", "dark_magician", false },
+	{ "blue_eyes", "red_eyes", false },
+	{ "silver_fang", "kuriboh", false },
+	{ "faith_bird", "dark_magician_girl", false },
+	{ "deepsea_shark", "baby_dragon", false },
+	{ "stone_ogre_grotto", "dark_magician", false },
+	{ "summoned_skull", "dark_magician_girl", false },
 };
+// Voladores (TABLA_REGLAS vuela) que NO aletean: maquinas y otras cosas que flotan sin alas de animal (por su regla)
+const char* const VUELAN_SIN_ALETEAR[] = { "maquina", "espiritu" };
+// Alas sin esqueleto (escena.vert). Un ala es lo que queda a mas de "bisagra" del centro del modelo (en x), por encima
+// de "abajo" (asi la cola y las patas no se mueven) y detras del plano z - pendiente * y < corte (asi los brazos que
+// estan delante del pecho no se mueven); gira entera alrededor de la linea x = +-bisagra, y = altura (paralela a z).
+// Medidas en coordenadas del modelo glTF, sacadas de los vertices de cada .glb (vista de costado de lo que queda
+// fuera de la bisagra). Las cartas que no estan aqui usan fracciones de sus medidas (BISAGRA_ALAS, ALTURA_BISAGRA,
+// ABAJO_ALAS) y no cortan por z
+struct DatosAlas { const char* carta; float bisagra, altura, abajo, pendiente, corte; };
+const DatosAlas ALAS_MEDIDAS[] = {
+	{ "baby_dragon", 0.18f, 0.25f, 0.0f, 0.371f, 0.015f },   // los punos van delante, las alas en la espalda
+	{ "red_eyes", 0.18f, 0.375f, 0.03f, 0.0f, 100.0f },      // abajo: la cola y las garras
+};
+constexpr float BISAGRA_ALAS = 0.18f, ALTURA_BISAGRA = 0.62f, ABAJO_ALAS = 0.45f;   // fracciones del ancho / alto
+constexpr float AMPLITUD_ALAS = 0.42f, TRANSICION_ALAS = 0.06f;   // angulo maximo (rad); transicion (fraccion del ancho)
 constexpr size_t NUM_ENFRENTAMIENTOS = sizeof(ENFRENTAMIENTOS) / sizeof(ENFRENTAMIENTOS[0]);
 const glm::vec4 OJO_KURIBOH_B{ 0.1220f, 0.5500f, 0.3380f, 0.085f };
 
@@ -214,7 +250,19 @@ public:
 		glm::vec4 vida;         // x, y: base del monstruo en el mundo (x, z), z: respiracion, w: pelo
 		glm::vec4 ojoA{ 0.0f }; // ojos con parpado (coordenadas del modelo): centro y radio (0: sin parpados)
 		glm::vec4 ojoB{ 0.0f }; // centro del otro ojo y cuanto esta cerrado (0 abierto, 1 cerrado)
+		// Los mismos dos vec4 sirven para las ALAS de los voladores (solo monstruos sin ojos medidos): ojoA.w < 0
+		// activa el aleteo (los parpados piden ojoA.w > 0, asi nunca se mezclan). Coordenadas del modelo glTF:
+		// ojoA = (centro x, altura y de la bisagra, distancia de la bisagra al centro, -1 - pendiente)
+		// ojoB = (angulo actual de las alas en rad, + arriba; ancho de la transicion junto a la bisagra; abajo; corte)
+		// (ver DatosAlas: abajo, pendiente y corte limitan que vertices son ala)
 	};
+	// alas de cada monstruo (coordenadas de su modelo): centro x, altura de la bisagra, distancia de la bisagra al
+	// centro, frecuencia del aleteo (rad/s; 0 = no aletea). La fase se acumula cuadro a cuadro (faseAlas) para que
+	// cambiar la velocidad (Pose.aleteo) no haga saltar las alas
+	std::array<glm::vec4, NUM_MONSTRUOS> alas{};
+	std::array<glm::vec3, NUM_MONSTRUOS> corteAlas{};   // abajo, pendiente y corte (ver DatosAlas)
+	std::array<float, NUM_MONSTRUOS> faseAlas{};
+	std::array<float, NUM_MONSTRUOS> amplitudAlas{};
 
 	struct {
 		VkImage imagen{ VK_NULL_HANDLE };
@@ -315,6 +363,53 @@ public:
 		armaGuardian = empunar(guardian, espada, LARGO_ESPADA, AGARRE_ESPADA, glm::vec3(0.0f, -0.55f, 1.0f));
 		for (size_t i = 0; i < NUM_MONSTRUOS; i++) {
 			monstruos[i].loadFromFile(getAssetPath() + "models/yugi/" + MONSTRUOS[i].carta + ".glb", vulkanDevice, queue, flags);
+			prepararAlas(i);
+		}
+	}
+
+	// Alas del monstruo i: solo voladores (TABLA_REGLAS) con alas de animal (no maquinas ni espiritus) y sin
+	// esqueleto. La bisagra sale de las medidas del modelo; los grandes aletean mas lento
+	void prepararAlas(size_t i)
+	{
+		alas[i] = glm::vec4(0.0f);
+		const combate::ReglaCarta* d = datosRegla((int)i);
+		if (!d || !d->vuela || !esRigido((int)i)) {
+			return;
+		}
+		for (const char* r : VUELAN_SIN_ALETEAR) {
+			if (strcmp(d->regla, r) == 0) {
+				return;
+			}
+		}
+		const vkglTF::Model& m = monstruos[i];
+		const glm::vec3 tam = m.dimensions.size;
+		const float alto = tam.y * glm::length(glm::vec3(glm::make_mat4(MONSTRUOS[i].matriz)[0]));
+		const float hz = glm::clamp(1.9f - 0.22f * alto, 0.7f, 1.6f);   // vueltas por segundo
+		alas[i] = glm::vec4(0.5f * (m.dimensions.min.x + m.dimensions.max.x), m.dimensions.min.y + ALTURA_BISAGRA * tam.y,
+		                    BISAGRA_ALAS * tam.x, 2.0f * glm::pi<float>() * hz);
+		corteAlas[i] = glm::vec3(m.dimensions.min.y + ABAJO_ALAS * tam.y, 0.0f, 1e4f);
+		for (const DatosAlas& a : ALAS_MEDIDAS) {
+			if (strcmp(a.carta, MONSTRUOS[i].carta) == 0) {
+				alas[i].y = a.altura;
+				alas[i].z = a.bisagra * tam.x;
+				corteAlas[i] = glm::vec3(a.abajo, a.pendiente, a.corte);
+			}
+		}
+	}
+
+	// cada cuadro: avanza la fase de las alas con la velocidad que pide la regla (Pose.aleteo: 2-3 al atacar, 0 al
+	// morir; con 0 las alas ademas se quedan quietas en su lugar, no congeladas a medio aleteo)
+	void actualizarAlas()
+	{
+		for (size_t i = 0; i < NUM_MONSTRUOS; i++) {
+			if (alas[i].w <= 0.0f) {
+				continue;
+			}
+			combate::Pose pose;
+			matrizMonstruo(i, &pose);
+			const float aleteo = animar ? glm::max(pose.aleteo, 0.0f) : 0.0f;
+			faseAlas[i] = fmodf(faseAlas[i] + frameTimer * alas[i].w * aleteo, 2.0f * glm::pi<float>());
+			amplitudAlas[i] = AMPLITUD_ALAS * glm::min(aleteo, 1.0f);
 		}
 	}
 
@@ -813,47 +908,60 @@ public:
 			ojo.y += sinf(tiempo * 0.13f) * 0.25f;
 		}
 		if (hayAtaque()) {
-			// corte de cine: de costado al duelo (perpendicular a la linea entre los dos, del lado de la camara)
-			// y a media altura, para que los dos se vean a tamano parecido y la accion cruce la pantalla
+			// corte de cine: de costado al duelo (perpendicular a la linea entre los dos) y algo mas cerca del rival:
+			// como los dos se giran DE FRENTE uno al otro, desde ahi se ven los dos de frente / tres cuartos (nunca
+			// de espaldas). La distancia es la justa para que entren los dos, con su ancho y su altura (voladores)
 			const float cine = suave(0.0f, 0.8f, tAtaque) * (1.0f - suave(7.2f, 8.6f, tAtaque));
 			const glm::vec3 duelo = base(objetivo) - base(atacante);
-			glm::vec3 costado = glm::normalize(glm::vec3(-duelo.z, 0.0f, duelo.x));
-			if (costado.z < 0.0f) {
-				costado = -costado;   // del lado del jugador (donde esta la camara normal)
-			}
-			const glm::vec3 medio = glm::mix(base(atacante), base(objetivo), 0.6f) + glm::vec3(0.0f, 1.3f, 0.0f);
-			// por encima del hombro del atacante, del costado con la vista mas despejada: se prueban los dos y gana el
-			// que deja mas lejos de la linea camara-duelo al monstruo mas cercano (antes solo esquivaba a Kuriboh y,
-			// con el tablero x1.4, las alas de Ojos Rojos tapaban los ataques del Mago)
-			const glm::vec3 detras = -glm::normalize(duelo);
-			// con un atacante grande (dragon con alas de 5 m) la camara se aleja y sube segun su tamano
-			const combate::Situacion sa = situacion(atacante);
-			// y con uno chico (Kuriboh) baja, para que no quede cortado abajo de la pantalla
-			const bool grande = esRigido(atacante);
-			const float lejania = grande ? glm::max(4.6f, 1.1f * sa.ancho + 2.2f) : 4.6f;
-			const float altura = grande ? glm::clamp(0.9f * sa.alto + 1.0f, 2.2f, 6.0f) : 3.2f;
+			const float largo = glm::length(duelo);
+			const glm::vec3 haciaRival = duelo / glm::max(largo, 1e-3f);
+			const glm::vec3 costado = glm::vec3(-haciaRival.z, 0.0f, haciaRival.x);
+			const combate::Situacion sa = situacion(atacante), so = situacion(objetivo);
+			// (de costado, el ancho de las alas casi no ocupa pantalla: se cuenta solo una parte)
+			const float medioAncho = 0.3f * glm::max(sa.ancho, so.ancho);
+			const float alto = glm::max(sa.alto + sa.vuelo, so.alto + so.vuelo);
+			const float lejania = glm::max((0.5f * largo + medioAncho + 0.4f) / tanf(glm::radians(27.0f)),
+			                               (0.55f * alto + 0.6f) / tanf(0.42f * fovVertical));
+			const glm::vec3 medio = glm::mix(base(atacante), base(objetivo), 0.5f) + glm::vec3(0.0f, glm::clamp(0.45f * alto, 1.2f, 3.0f), 0.0f);
 			auto candidato = [&](glm::vec3 lado) {
-				return base(atacante) + glm::normalize(detras * 1.0f + lado * 1.1f) * lejania + glm::vec3(0.0f, altura, 0.0f);
+				return medio + lado * lejania + haciaRival * (0.12f * largo) + glm::vec3(0.0f, 0.2f * lejania, 0.0f);
 			};
+			// del costado con la vista mas despejada: para cada otro monstruo que quede entre la camara y el duelo, el
+			// angulo entre el y el centro de la vista menos lo que ocupa (su ancho: las alas de Ojos Rojos llegan lejos
+			// de su centro); el despeje es el menor de esos angulos (rad). Mas de ~0.55 = fuera de la pantalla
 			auto despeje = [&](glm::vec3 o) {
 				float minimo = 1e9f;
+				const glm::vec3 ab = medio - o;
+				const float distMedio = glm::length(ab);
 				for (size_t i = 0; i < NUM_MONSTRUOS; i++) {
 					if ((int)i == atacante || (int)i == objetivo) {
 						continue;
 					}
-					const glm::vec3 p = base(i) + glm::vec3(0.0f, 1.5f, 0.0f);
-					const glm::vec3 ab = medio - o;
-					const float t = glm::clamp(glm::dot(p - o, ab) / glm::dot(ab, ab), 0.0f, 1.0f);
-					// se descuenta el ancho del monstruo (las alas de Ojos Rojos llegan lejos de su centro)
+					const glm::vec3 p = base(i) + glm::vec3(0.0f, 1.5f, 0.0f) - o;
+					const float dist = glm::length(p);
+					if (glm::dot(p, ab) <= 0.0f || dist > distMedio) {
+						continue;   // detras de la camara o mas lejos que el duelo: no lo tapa
+					}
 					const glm::vec3 tam = monstruos[i].dimensions.size;
 					const float radio = 0.5f * glm::max(tam.x, tam.z) * glm::length(glm::vec3(matrizMonstruo(i)[0]));
-					minimo = glm::min(minimo, glm::length(p - (o + ab * t)) - radio);
+					const float angulo = acosf(glm::clamp(glm::dot(p / dist, ab / distMedio), -1.0f, 1.0f));
+					minimo = glm::min(minimo, angulo - atanf(radio / glm::max(dist, 0.1f)));
 				}
 				return minimo;
 			};
-			const glm::vec3 lejos = despeje(candidato(costado)) > despeje(candidato(-costado)) ? costado : -costado;
+			// del lado del jugador (donde esta la camara normal: los demas monstruos miran hacia alla, no se les ve la
+			// espalda) salvo que de ese lado algun monstruo quede en la pantalla delante del duelo
+			const glm::vec3 delJugador = costado.z >= 0.0f ? costado : -costado;
+			const float despejeJugador = despeje(candidato(delJugador));
+			const glm::vec3 lejos = despejeJugador > 0.55f || despejeJugador >= despeje(candidato(-delJugador)) ? delJugador : -delJugador;
 			const glm::vec3 ojoCine = candidato(lejos);
-			ojo = glm::mix(ojo, ojoCine, cine);
+			// el corte va en arco alrededor del centro de la mesa (no en linea recta: del otro lado del tablero la recta
+			// pasaba rozando la mesa y atravesaba a los monstruos)
+			const glm::vec2 r0(ojo.x - OBJETIVO.x, ojo.z - OBJETIVO.z), r1(ojoCine.x - OBJETIVO.x, ojoCine.z - OBJETIVO.z);
+			const float a0 = atan2f(r0.x, r0.y);
+			const float a = a0 + remainderf(atan2f(r1.x, r1.y) - a0, 2.0f * glm::pi<float>()) * cine;
+			const float radio = glm::mix(glm::length(r0), glm::length(r1), cine);
+			ojo = glm::vec3(OBJETIVO.x + sinf(a) * radio, glm::mix(ojo.y, ojoCine.y, cine), OBJETIVO.z + cosf(a) * radio);
 			mira = glm::mix(mira, medio, cine);
 			// sacudida de la camara en el impacto
 			ojo += glm::vec3(sinf(tAtaque * 71.0f), cosf(tAtaque * 53.0f), 0.0f) * 0.15f * destello();
@@ -947,20 +1055,35 @@ public:
 
 	// Matriz del monstruo i en este instante: la de Blender, flotando y balanceandose sobre su carta,
 	// y lo que le toque del ataque (elevarse al cargar, temblar y retroceder al recibir el golpe)
-	glm::mat4 matrizMonstruo(size_t i, combate::Pose* salida = nullptr) const
+	// Altura a la que flota en reposo un volador (Situacion.vuelo): ~0.35 de su alto, al menos 0.6 m; 0 si no vuela
+	float alturaVuelo(int i) const
+	{
+		const combate::ReglaCarta* d = datosRegla(i);
+		if (!d || !d->vuela || !esRigido(i)) {
+			return 0.0f;
+		}
+		const float alto = monstruos[i].dimensions.size.y * glm::length(glm::vec3(glm::make_mat4(MONSTRUOS[i].matriz)[0]));
+		return glm::max(0.6f, 0.35f * alto);
+	}
+
+	// "movido" (si se pide): cuanto se movio el cuerpo entero de su carta en este instante (vuelo, vaiven y ataque)
+	glm::mat4 matrizMonstruo(size_t i, combate::Pose* salida = nullptr, glm::vec3* movido = nullptr) const
 	{
 		const MonstruoEscena& m = MONSTRUOS[i];
 		const glm::mat4 matriz = glm::make_mat4(m.matriz);
 		const glm::vec3 centro = base((int)i);
 		glm::vec3 desplazar{ 0.0f };
-		// de frente al monitor (la camara), con un balanceo leve
+		// de frente al monitor (la camara), con un balanceo leve. El frente del modelo es su +Z (glTF)
 		const glm::vec3 haciaCamara = OJO - centro;
 		const float frente = atan2f(haciaCamara.x, haciaCamara.z);
 		float giro = frente;
 		float inclinar = 0.0f;   // hacia adelante (+) o atras (-), alrededor de la base
+		// los voladores estan en el aire sobre su carta (tambien en reposo), con un vaiven lento
+		const float vuelo = alturaVuelo((int)i);
+		desplazar.y = vuelo;
 		if (animar) {
 			const float fase = (float)i * 1.7f;
-			desplazar.y = 0.06f * (0.5f + 0.5f * sinf(tiempo * 1.6f + fase));
+			desplazar.y = vuelo > 0.0f ? vuelo + 0.12f * sinf(tiempo * 1.3f + fase) : 0.06f * (0.5f + 0.5f * sinf(tiempo * 1.6f + fase));
 			giro = frente + glm::radians(4.0f) * sinf(tiempo * 0.55f + fase);
 			if ((int)i == kuriboh) {
 				// un salto cada 4.2 s, y uno de susto con el impacto (sin el balanceo ni el flotar de los demas)
@@ -979,6 +1102,11 @@ public:
 		float caer = 0.0f;            // 0 de pie .. 90 grados tendido de lado
 		if (hayAtaque() && ((int)i == atacante || (int)i == objetivo)) {
 			hacia = glm::normalize(base((int)i == atacante ? objetivo : atacante) - centro);
+			// regla del usuario: todos miran a la pantalla y, al atacar (o al recibir), se giran DE FRENTE a su rival
+			// por el lado mas corto (0.6 s), y vuelven a mirar a la camara al final (VUELVE .. VUELVE + 0.8)
+			const float mirar = atan2f(hacia.x, hacia.z);
+			const float dif = remainderf(mirar - frente, 2.0f * glm::pi<float>());
+			giro += dif * suave(0.0f, 0.6f, tAtaque) * (1.0f - suave(combate::VUELVE, combate::VUELVE + 0.8f, tAtaque));
 		}
 		// el ataque: lo decide la regla del monstruo (reglas/regla_*.h); al final todo vuelve a su lugar
 		combate::Pose pose;
@@ -1000,9 +1128,13 @@ public:
 			pose.escala = 1.0f + (pose.escala - 1.0f) * vuelve;
 			pose.aplastar = 1.0f + (pose.aplastar - 1.0f) * vuelve;
 			pose.desintegrar *= vuelve;
+			pose.aleteo = 1.0f + (pose.aleteo - 1.0f) * vuelve;
 		}
 		if (salida) {
 			*salida = pose;
+		}
+		if (movido) {
+			*movido = desplazar;
 		}
 		const glm::vec3 lado = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), hacia));
 		// al caer de lado gira sobre el borde de su base (no se hunde en la mesa)
@@ -1248,8 +1380,16 @@ public:
 			// el atacante brilla mas mientras carga
 			const float holo = brilloHolo + pose.brillo;
 			const float ojos = pose.ojos >= 0.0f ? glm::max(pose.ojos, parpado()) : parpado();
-			dibujar(cmd, monstruos[i], mm, glm::vec4(holo, 0.6f, dis, 0.0f), vida, imagenes,
-			        esKuriboh ? OJO_KURIBOH_A : glm::vec4(0.0f), esKuriboh ? glm::vec4(glm::vec3(OJO_KURIBOH_B), ojos) : glm::vec4(0.0f));
+			glm::vec4 ojoA(0.0f), ojoB(0.0f);
+			if (esKuriboh) {
+				ojoA = OJO_KURIBOH_A;
+				ojoB = glm::vec4(glm::vec3(OJO_KURIBOH_B), ojos);
+			} else if (alas[i].w > 0.0f) {
+				// alas: piezas rigidas que giran en su bisagra (ver Empuje y escena.vert)
+				ojoA = glm::vec4(alas[i].x, alas[i].y, alas[i].z, -1.0f - corteAlas[i].y);
+				ojoB = glm::vec4(amplitudAlas[i] * sinf(faseAlas[i]), TRANSICION_ALAS * monstruos[i].dimensions.size.x, corteAlas[i].x, corteAlas[i].z);
+			}
+			dibujar(cmd, monstruos[i], mm, glm::vec4(holo, 0.6f, dis, 0.0f), vida, imagenes, ojoA, ojoB);
 		}
 		// las armas, en la mano de cada personaje
 		if (atacante >= 0 && objetivo >= 0) {
@@ -1477,6 +1617,8 @@ public:
 		}
 		const combate::ReglaCarta* d = datosRegla(i);
 		st.vuela = d && d->vuela;
+		st.vuelo = alturaVuelo(i);
+		st.ladoRival = MONSTRUOS[i].rival;
 		st.semilla = numAtaque * 977u + (uint32_t)i;
 		st.halo = d ? glm::vec3(d->halo[0], d->halo[1], d->halo[2]) : colHalo;
 		st.nucleo = d ? glm::vec3(d->nucleo[0], d->nucleo[1], d->nucleo[2]) : colNucleo;
@@ -1486,9 +1628,9 @@ public:
 	// de donde sale el ataque de un monstruo sin esqueleto (sigue a su cuerpo)
 	glm::vec3 origenRegla() const
 	{
-		combate::Pose pa;
-		matrizMonstruo((size_t)atacante, &pa);
-		return reglaDe(atacante).origen(situacion(atacante)) + pa.desplazar;
+		glm::vec3 movido{ 0.0f };
+		matrizMonstruo((size_t)atacante, nullptr, &movido);
+		return reglaDe(atacante).origen(situacion(atacante)) + movido;
 	}
 
 	// a donde llega: el pecho del atacado (un mago con esqueleto, o un monstruo sin esqueleto donde este ahora)
@@ -1497,9 +1639,9 @@ public:
 		if (!esRigido(objetivo)) {
 			return base(objetivo) + glm::vec3(0.0f, 1.55f, 0.0f);
 		}
-		combate::Pose po;
-		matrizMonstruo((size_t)objetivo, &po);
-		return base(objetivo) + po.desplazar + glm::vec3(0.0f, 0.6f * situacion(objetivo).alto, 0.0f);
+		glm::vec3 movido{ 0.0f };
+		matrizMonstruo((size_t)objetivo, nullptr, &movido);
+		return base(objetivo) + movido + glm::vec3(0.0f, 0.6f * situacion(objetivo).alto, 0.0f);
 	}
 
 	struct PincelVk : combate::Pincel {
@@ -1692,18 +1834,33 @@ public:
 			const combate::Situacion so = situacion(objetivo);
 			colHalo = so.halo;
 			colNucleo = so.nucleo;
-			combate::Pose po;
-			matrizMonstruo((size_t)objetivo, &po);
-			reglaDe(objetivo).efectoDerrota(so, base(objetivo) + po.desplazar + glm::vec3(0.0f, 0.4f * so.alto, 0.0f), pincel);
+			glm::vec3 movido{ 0.0f };
+			matrizMonstruo((size_t)objetivo, nullptr, &movido);
+			reglaDe(objetivo).efectoDerrota(so, base(objetivo) + movido + glm::vec3(0.0f, 0.4f * so.alto, 0.0f), pincel);
 		}
 		colHalo = halo0;
 		colNucleo = nucleo0;
 	}
 
-	// prepara el enfrentamiento n: quien ataca a quien; a los magos les sortea el rayo
+	// un enfrentamiento se puede jugar si sus dos cartas estan en la escena y en lados distintos del tablero (regla
+	// del usuario: nadie ataca a su propio lado); el Guardian (con esqueleto) todavia no ataca
+	static bool dueloValido(size_t n)
+	{
+		const int a = indice(ENFRENTAMIENTOS[n].atacante), o = indice(ENFRENTAMIENTOS[n].objetivo);
+		return a >= 0 && o >= 0 && a != o && MONSTRUOS[a].rival != MONSTRUOS[o].rival && strcmp(MONSTRUOS[a].carta, "celtic_guardian") != 0;
+	}
+
+	// prepara el enfrentamiento n (o el siguiente valido, si n no se puede jugar)
 	void elegirDuelo(size_t n)
 	{
 		duelo = n % NUM_ENFRENTAMIENTOS;
+		for (size_t k = 0; k < NUM_ENFRENTAMIENTOS && !dueloValido(duelo); k++) {
+			duelo = (duelo + 1) % NUM_ENFRENTAMIENTOS;
+		}
+		if (!dueloValido(duelo)) {
+			atacante = objetivo = -1;   // ninguno se puede jugar: no hay ataque
+			return;
+		}
 		atacante = indice(ENFRENTAMIENTOS[duelo].atacante);
 		objetivo = indice(ENFRENTAMIENTOS[duelo].objetivo);
 		usarPie = false;
@@ -1732,7 +1889,7 @@ public:
 #endif
 		for (size_t k = 1; k <= NUM_ENFRENTAMIENTOS; k++) {
 			const size_t n = (duelo + k) % NUM_ENFRENTAMIENTOS;
-			if (ENFRENTAMIENTOS[n].enJuego) {
+			if (ENFRENTAMIENTOS[n].enJuego && dueloValido(n)) {
 				return n;
 			}
 		}
@@ -2113,6 +2270,7 @@ public:
 		VulkanExampleBase::prepareFrame();
 		tiempo += frameTimer;
 		avanzarAtaque();
+		actualizarAlas();
 		revisarCapturas();
 		inspeccionar();
 		revisarCierre();
