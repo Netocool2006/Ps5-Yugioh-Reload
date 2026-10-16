@@ -46,6 +46,9 @@ struct Situacion {
 	float alto{ 2.6f };                     // altura del monstruo en el juego (m)
 	float ancho{ 1.5f };                    // ancho del monstruo (m)
 	bool vuela{ false };                    // volador (alas): ataca y se defiende en el aire
+	float vuelo{ 0.0f };                    // altura a la que flota en reposo (m; 0 si no vuela). El motor ya la
+	                                        // suma a su cuerpo: la regla solo agrega lo que suba o baje de mas
+	bool rival{ false };                    // esta del lado del rival (los ataques siempre cruzan el tablero)
 	uint32_t semilla{ 0 };                  // cambia en cada ataque (para variar chispas, gotas...)
 	glm::vec3 halo{ 1.0f }, nucleo{ 1.0f }; // color de su efecto (de quien ataca; ver color_magia / elemento)
 };
@@ -61,6 +64,7 @@ struct Pose {
 	float desintegrar{ 0.0f };     // 0..1: el shader lo deshace en particulas (lo usa la derrota)
 	float brillo{ 0.0f };          // holograma extra (cargar energia)
 	float ojos{ -1.0f };           // parpado de los que tienen ojos medidos: -1 no tocar, 0 abiertos, 1 cerrados
+	float aleteo{ 1.0f };          // voladores con alas: velocidad del aleteo (1 normal, 2-3 al atacar, 0 quietas)
 };
 
 // Lo que una regla puede dibujar (luz aditiva: resplandor suave con centro brillante)
@@ -72,7 +76,57 @@ struct Pincel {
 	virtual void bola(glm::vec3 centro, float radio, glm::vec3 color, float brillo) = 0;
 	// rayo electrico quebrado de a hasta b (amplitud ~0.06 del largo, grosor ~1, ramas 0..3)
 	virtual void relampago(glm::vec3 a, glm::vec3 b, uint32_t semilla, float amplitud, float grosor, int ramas) = 0;
+
+	// ---- efectos "de verdad" (no son luz pura: fuego con forma, agua y humo con transparencia) ----
+	// FUEGO: una lengua de fuego que va de "base" a "punta" (llamarada con ruido animado: blanco-amarillo en el
+	// nucleo, naranja, rojo y humo en los bordes y la punta). ancho en m; intensidad 0..1; semilla para variar.
+	// Para una llamarada larga: varias lenguas seguidas o superpuestas
+	virtual void llama(glm::vec3 base, glm::vec3 punta, float ancho, float intensidad, uint32_t semilla)
+	{
+		bola(punta, ancho * 0.5f, glm::vec3(1.6f, 0.5f, 0.1f), 0.4f * intensidad);   // respaldo si no hay fuego real
+		(void)base; (void)semilla;
+	}
+	// AGUA: volumen de agua (gota, borbotón o tramo de chorro) con transparencia, reflejo y brillo especular.
+	// color = tinte del agua (ej. azul mar); opacidad 0..1
+	virtual void liquido(glm::vec3 centro, float radio, glm::vec3 color, float opacidad)
+	{
+		bola(centro, radio, color, 0.3f * opacidad);
+	}
+	// CHARCO: lamina de agua plana sobre la mesa (y del centro = altura de la mesa), con ondas
+	virtual void charco(glm::vec3 centro, float radio, glm::vec3 color, float opacidad)
+	{
+		(void)centro; (void)radio; (void)color; (void)opacidad;
+	}
+	// HUMO o POLVO: nube suave con transparencia (puede ser oscura: no suma luz)
+	virtual void humo(glm::vec3 centro, float radio, glm::vec3 color, float opacidad)
+	{
+		(void)centro; (void)radio; (void)color; (void)opacidad;
+	}
 };
+
+// Caer derrotado "como el Guardian" (regla del usuario): de ESPALDAS, lejos del atacante: el golpe lo empuja,
+// se le doblan las piernas (se hunde un poco), cae hacia atras, rebota en la mesa y se queda tendido; luego se
+// desintegra. Si vuela, primero cae al suelo. Usar en derrota() de cualquier regla salvo que la regla diga otra cosa
+inline void caerDeEspaldas(const Situacion& s, Pose& p, float desde = MUERE)
+{
+	const float t = s.t;
+	const float baja = s.vuela ? suave(desde, desde + 0.45f, t) : 0.0f;   // primero cae al suelo
+	const float t0 = desde + (s.vuela ? 0.45f : 0.0f);
+	p.desplazar.y -= s.vuelo * baja;
+	p.desplazar -= s.hacia * (0.5f + 0.35f * suave(t0, t0 + 0.6f, t));      // el golpe lo empuja hacia atras
+	const float doblar = suave(t0, t0 + 0.25f, t);
+	p.aplastar *= 1.0f - 0.08f * doblar * (1.0f - suave(t0 + 0.3f, t0 + 0.6f, t));   // se le doblan las piernas
+	float atras = 1.5f * suave(t0 + 0.12f, t0 + 0.7f, t);                    // cae de espaldas
+	const float r = t - (t0 + 0.7f);
+	if (r > 0.0f && r < 0.35f) {
+		atras -= 0.12f * sinf(3.14159f * r / 0.35f);                         // rebota en la mesa
+	}
+	p.inclinar -= atras;
+	p.desplazar.y -= 0.12f * suave(t0 + 0.4f, t0 + 0.7f, t);
+	p.ojos = 1.0f;
+	p.aleteo = 1.0f - suave(t0, t0 + 0.4f, t);
+	p.desintegrar = suave(DESAPARECE, DESAPARECE + 1.0f, t);
+}
 
 // Una regla (implementa lo que necesite; lo que no, queda como el cuerpo en reposo)
 struct Regla {
