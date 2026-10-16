@@ -16,7 +16,38 @@ layout (push_constant) uniform Empuje
 	vec4 vida;       // x, y: base en el mundo (x, z), z: respiracion, w: pelo
 	vec4 ojoA;       // ojo con parpado (coordenadas del modelo): centro, radio (0: sin parpados)
 	vec4 ojoB;       // el otro ojo: centro, cuanto esta cerrado (0..1)
+	                 // ALAS (si ojoA.w < 0; los parpados piden ojoA.w > 0): ojoA = (centro x, altura de la bisagra,
+	                 // distancia de la bisagra al centro, -1 - pendiente), ojoB = (angulo de las alas en rad, + arriba;
+	                 // ancho de la transicion junto a la bisagra; abajo; corte). Todo en coordenadas del modelo glTF
 } empuje;
+
+// Aleteo sin esqueleto y sin deformar la figura: cada ala (lo que queda mas alla de la bisagra, |x - centro| >
+// bisagra, por encima de "abajo" y detras del plano z - pendiente * y = corte, para dejar quietos cola, patas y
+// brazos) gira ENTERA como una pieza rigida alrededor de la linea de su bisagra (paralela al eje Z del modelo,
+// adelante-atras); solo en los bordes de esa zona el angulo pasa suave de 0 al de la pieza, para que la malla no se
+// rompa. Las dos alas suben y bajan a la vez (espejadas)
+void aletear(inout vec3 p, inout vec3 n)
+{
+	if (empuje.ojoA.w >= 0.0 || empuje.efecto.w > 0.0) {
+		return;
+	}
+	float dx = p.x - empuje.ojoA.x;
+	float lado = dx < 0.0 ? -1.0 : 1.0;
+	float d = abs(dx) - empuje.ojoA.z;
+	if (d <= 0.0) {
+		return;
+	}
+	float borde = max(empuje.ojoB.y, 1e-4);
+	float pendiente = -empuje.ojoA.w - 1.0;
+	float pieza = smoothstep(0.0, borde, d) * smoothstep(empuje.ojoB.z - 0.25 * borde, empuje.ojoB.z + 0.25 * borde, p.y) *
+	              (1.0 - smoothstep(empuje.ojoB.w - 0.25 * borde, empuje.ojoB.w + 0.25 * borde, p.z - pendiente * p.y));
+	float a = empuje.ojoB.x * lado * pieza;
+	vec2 bisagra = vec2(empuje.ojoA.x + lado * empuje.ojoA.z, empuje.ojoA.y);
+	float c = cos(a), s = sin(a);
+	vec2 r = p.xy - bisagra;
+	p.xy = bisagra + vec2(c * r.x - s * r.y, s * r.x + c * r.y);
+	n.xy = vec2(c * n.x - s * n.y, s * n.x + c * n.y);
+}
 
 // "Vida": respira (se ensancha y se achata alrededor de su base) y, si tiene pelo, lo mueve
 vec3 vivir(vec3 mundo, vec3 normalMundo)
@@ -48,8 +79,11 @@ layout (location = 3) out vec3 outPosModelo;
 
 void main()
 {
-	vec3 normalMundo = normalize(mat3(empuje.modelo) * inNormal);
-	vec3 mundo = vivir((empuje.modelo * vec4(inPos, 1.0)).xyz, normalMundo);
+	vec3 pos = inPos;
+	vec3 normal = inNormal;
+	aletear(pos, normal);
+	vec3 normalMundo = normalize(mat3(empuje.modelo) * normal);
+	vec3 mundo = vivir((empuje.modelo * vec4(pos, 1.0)).xyz, normalMundo);
 	outPosMundo = mundo;
 	outNormal = normalMundo;
 	outUV = inUV;
