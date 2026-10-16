@@ -73,6 +73,22 @@ Detalle en [docs/02-cartas.md](docs/02-cartas.md).
 - ⏳ Pendiente: revisar las 7 reglas propuestas (demonio, zombi, piro, trueno, planta, espíritu y objeto),
   producir el resto de los 496 monstruos y el duelo completo en el remake.
 
+## Estructura del código
+
+| Carpeta | Contenido |
+|---|---|
+| `remake-ps5/src/` | El remake: `yugireload.cpp` (tablero, personajes, cámara, efectos) y `reglas/` (motor de reglas de combate: un archivo por regla) |
+| `remake-ps5/shaders/` | Shaders Vulkan (GLSL) |
+| `remake-ps5/*.py, *.sh` | Compilar en Docker, subir a la PS5 por FTP, fotos y video desde la consola |
+| `remake/diseno/` | Diseño: tablero, tamaños lógicos, **plantillas** (`plantillas.json`) y **reglas de combate** (`reglas_combate.json`) |
+| `herramientas/` | Producción: Gemini, Meshy, TRELLIS en Colab (`colab_trellis/`), Blender sin ventana (`blender/`), clasificación de plantillas, reglas y colores |
+| `launcher/` | Lanzador del mod de PC (temperamentos, nivel elástico, inyección de la tabla de rivales) |
+| `re-scripts/` | Ingeniería inversa y datos: contenedor `Data.dat`, mazos, generador de la biblioteca, desbloqueo, limpieza de cartas basura |
+| `pruebas/` | Batería de 116 pruebas, incluidos duelos reales jugados solos |
+
+No se incluyen los archivos del juego ni nada derivado de su arte; las rutas `D:\Yugi-Reload\...` de
+los scripts son las de la máquina de desarrollo.
+
 ## Cómo se trabaja
 
 - Todo lo visual se revisa **como lo ve una persona**: videos cortos en el PC, tomas desde varios

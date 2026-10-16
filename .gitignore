@@ -1,0 +1,50 @@
+# Yugi Reload: repositorio PUBLICO. Lista blanca: todo queda fuera salvo lo que se nombra abajo.
+# NUNCA subir: nada de Konami (juego, Data.dat, imagenes, mazos extraidos, modelos o arte derivados de las
+# cartas), claves (herramientas/claves), perfiles del navegador, la IP de la consola (remake-ps5/consola_ip.txt).
+/*
+!/.gitignore
+!/README.md
+!/docs/
+
+# remake PS5 (codigo propio)
+!/remake-ps5/
+/remake-ps5/*
+!/remake-ps5/src/
+!/remake-ps5/shaders/
+!/remake-ps5/third_party/
+!/remake-ps5/escena/
+/remake-ps5/escena/*
+!/remake-ps5/escena/escena.h
+!/remake-ps5/*.py
+!/remake-ps5/*.sh
+/remake-ps5/consola_ip.txt
+
+# diseno del remake (tablero, tamanos, plantillas, reglas de combate)
+!/remake/
+/remake/*
+!/remake/diseno/
+!/remake/src/
+
+# herramientas propias (solo scripts)
+!/herramientas/
+/herramientas/*
+!/herramientas/*.py
+!/herramientas/blender/
+!/herramientas/colab_trellis/
+!/herramientas/puente-gemini/
+/herramientas/puente-gemini/*
+!/herramientas/puente-gemini/*.py
+
+# mod de PC: lanzador, scripts de ingenieria inversa y bateria de pruebas
+!/launcher/
+/launcher/*
+!/launcher/*.py
+!/re-scripts/
+/re-scripts/*
+!/re-scripts/*.py
+!/pruebas/
+/pruebas/*
+!/pruebas/*.py
+
+__pycache__/
+*.pyc

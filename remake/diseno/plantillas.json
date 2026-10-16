@@ -1,0 +1,3211 @@
+{
+ "_nota": "Plantillas de monstruos (arquetipos) y la de cada carta. 'revisar' = confirmar con su figura.png antes de producirlo. Magias y trampas: cartas planas con efectos (sin 3D). Generado por herramientas/clasificar_plantillas.py",
+ "plantillas": {
+  "lanzador_baculo": {
+   "nombre": "Lanzador con baculo",
+   "ejemplo": "Mago Oscuro, Maga Oscura",
+   "cuerpo": "humanoide con baculo, cetro o varita",
+   "esqueleto": "Meshy (humanoide) + hueso Baculo propio",
+   "reposo": "Idle 3 de frente al monitor, cabeza alzada, baculo a dos manos",
+   "ataque": "gira hacia el rival, carga el baculo atras y lanza rayo electrico desde la punta",
+   "herramientas": "arma_a_mano.py nuevo:Baculo; LANZADORES[] en yugireload.cpp",
+   "creditos": 8,
+   "hecha": true,
+   "monstruos": 13
+  },
+  "guerrero_espada": {
+   "nombre": "Guerrero con espada",
+   "ejemplo": "Guardian Celta",
+   "cuerpo": "humanoide con espada, sable o arma corta de una mano (con o sin escudo)",
+   "esqueleto": "Meshy (humanoide), arma pegada a la mano",
+   "reposo": "de frente al monitor, cabeza alzada",
+   "ataque": "corre/salta y da un tajo; se cubre y cae al perder",
+   "herramientas": "arma_a_mano.py <mano> gris",
+   "creditos": 8,
+   "hecha": true,
+   "monstruos": 48
+  },
+  "guerrero_arma_larga": {
+   "nombre": "Guerrero con arma larga o pesada",
+   "ejemplo": "Asaltante con Hacha, Buey de Batalla",
+   "cuerpo": "humanoide con hacha, lanza, martillo, maza, guadana o latigo (a dos manos)",
+   "esqueleto": "Meshy (humanoide) + hueso de arma propio (como el baculo)",
+   "reposo": "de frente, arma en guardia",
+   "ataque": "golpe de arriba abajo o estocada a dos manos",
+   "herramientas": "arma_a_mano.py nuevo:<Arma>",
+   "creditos": 8,
+   "hecha": false,
+   "monstruos": 26
+  },
+  "tirador": {
+   "nombre": "Tirador (arco o arma de fuego)",
+   "ejemplo": "Arquera Amazona",
+   "cuerpo": "humanoide con arco, ballesta o arma de fuego",
+   "esqueleto": "Meshy (humanoide)",
+   "reposo": "de frente, arma baja",
+   "ataque": "apunta y dispara un proyectil con estela",
+   "herramientas": "arma_a_mano.py; proyectil por codigo",
+   "creditos": 8,
+   "hecha": false,
+   "monstruos": 4
+  },
+  "lanzador_manos": {
+   "nombre": "Hechicero sin arma",
+   "ejemplo": "Elfa Mistica, Jinzo",
+   "cuerpo": "humanoide que ataca con magia de las manos (hadas, brujas, espiritus con cuerpo)",
+   "esqueleto": "Meshy (humanoide)",
+   "reposo": "de frente, manos juntas o abiertas",
+   "ataque": "extiende las manos y lanza una esfera o rayo de energia",
+   "herramientas": "efecto de rayo de crear_rayo.py",
+   "creditos": 8,
+   "hecha": false,
+   "monstruos": 63
+  },
+  "luchador": {
+   "nombre": "Luchador cuerpo a cuerpo",
+   "ejemplo": "Craneo Convocado, Hombre Karate",
+   "cuerpo": "humanoide o monstruo de dos patas que pega con punos o garras",
+   "esqueleto": "Meshy (humanoide)",
+   "reposo": "de frente, guardia",
+   "ataque": "avanza y da un punetazo o zarpazo",
+   "herramientas": "-",
+   "creditos": 8,
+   "hecha": false,
+   "monstruos": 83
+  },
+  "jinete": {
+   "nombre": "Jinete o centauro",
+   "ejemplo": "Gaia el Caballero Feroz",
+   "cuerpo": "jinete sobre montura, o centauro",
+   "esqueleto": "sin esqueleto (cuerpo rigido)",
+   "reposo": "de frente, la montura respira",
+   "ataque": "carga en linea recta con la lanza al frente y vuelve",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 5
+  },
+  "volador_alado": {
+   "nombre": "Volador con alas",
+   "ejemplo": "Dragon Negro de Ojos Rojos, Bebe Dragon",
+   "cuerpo": "dragones, aves, murcielagos e insectos voladores",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "flota con vaiven suave, de frente",
+   "ataque": "se eleva y lanza aliento o rayo por la boca, o embiste en picada",
+   "herramientas": "movimientos por codigo (como Ojos Rojos)",
+   "creditos": 0,
+   "hecha": true,
+   "monstruos": 59
+  },
+  "cuadrupedo": {
+   "nombre": "Cuadrupedo o bestia de tierra",
+   "ejemplo": "Colmillo Plateado, dinosaurios",
+   "cuerpo": "bestias de cuatro patas, dinosaurios, tortugas",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "respira y mira al monitor",
+   "ataque": "se agazapa, salta y muerde/embiste",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 33
+  },
+  "serpentino": {
+   "nombre": "Serpiente, gusano o anguila",
+   "ejemplo": "Serpiente Siniestra",
+   "cuerpo": "cuerpo largo sin patas (serpientes marinas, gusanos, larvas)",
+   "esqueleto": "sin esqueleto; ondulacion por shader de vertices",
+   "reposo": "se mece como una cobra",
+   "ataque": "se echa atras y lanza la cabeza al rival",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 18
+  },
+  "criatura_pequena": {
+   "nombre": "Criatura pequena",
+   "ejemplo": "Kuriboh",
+   "cuerpo": "bolitas, mascotas y criaturas chicas de cuerpo redondo",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "de frente, rebota, parpadea",
+   "ataque": "salta y choca contra el rival",
+   "herramientas": "medir_ojos.py para el parpadeo",
+   "creditos": 0,
+   "hecha": true,
+   "monstruos": 34
+  },
+  "bicho_rastrero": {
+   "nombre": "Bicho de tierra",
+   "ejemplo": "Escarabajo Hercules",
+   "cuerpo": "insectos, aranas y crustaceos que caminan",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "vibra y mueve un poco",
+   "ataque": "corre rapido al rival y pica/pellizca",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 17
+  },
+  "acuatico": {
+   "nombre": "Acuatico flotante",
+   "ejemplo": "Gran Tiburon Blanco, Medusa",
+   "cuerpo": "peces, pulpos y medusas",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "flota y nada en el sitio",
+   "ataque": "se lanza en embestida y vuelve",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 12
+  },
+  "maquina": {
+   "nombre": "Maquina",
+   "ejemplo": "Tanque Oni T-34",
+   "cuerpo": "tanques, robots no humanoides, canones y naves",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "zumbido: vibracion leve y luces",
+   "ataque": "retroceso y disparo de canon o laser",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 31
+  },
+  "espiritu": {
+   "nombre": "Espiritu flotante",
+   "ejemplo": "Mascara de la Oscuridad, Alma Hinotama",
+   "cuerpo": "fantasmas, llamas, nubes, cabezas o mascaras que flotan",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "flota, late y brilla",
+   "ataque": "se lanza atravesando al rival o suelta energia",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 20
+  },
+  "objeto": {
+   "nombre": "Objeto o estructura",
+   "ejemplo": "Jarra de Transformacion, Muro del Laberinto",
+   "cuerpo": "jarras, cofres, muros, rocas, plantas fijas, estatuas, huevos",
+   "esqueleto": "sin esqueleto (rigido)",
+   "reposo": "quieto con un brillo o temblor",
+   "ataque": "tiembla y lanza energia, o se abre y muerde",
+   "herramientas": "movimientos por codigo",
+   "creditos": 0,
+   "hecha": false,
+   "monstruos": 30
+  }
+ },
+ "cartas": {
+  "earthbound_spirit": {
+   "nombre": "Earthbound Spirit",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "espiritu"
+  },
+  "armored_starfish": {
+   "nombre": "Armored Starfish",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "criatura_pequena"
+  },
+  "armored_lizard": {
+   "nombre": "Armored Lizard",
+   "tipo": "Reptile",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "armaill": {
+   "nombre": "Armaill",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "the_little_swordsman_of_aile": {
+   "nombre": "The Little Swordsman of Aile",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "bite_shoes": {
+   "nombre": "Bite Shoes",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "aqua_madoor": {
+   "nombre": "Aqua Madoor",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "tainted_wisdom": {
+   "nombre": "Tainted Wisdom",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "espiritu"
+  },
+  "hiro_s_shadow_scout": {
+   "nombre": "Hiro's Shadow Scout",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "ansatsu": {
+   "nombre": "Ansatsu",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_espada"
+  },
+  "axe_raider": {
+   "nombre": "Axe Raider",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "amazon_archer": {
+   "nombre": "Amazon Archer",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "tirador"
+  },
+  "ameba": {
+   "nombre": "Ameba",
+   "tipo": "Aqua",
+   "nivel": 1,
+   "plantilla": "criatura_pequena"
+  },
+  "darkfire_dragon": {
+   "nombre": "Darkfire Dragon",
+   "tipo": "Dragon",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "gaia_the_fierce_knight": {
+   "nombre": "Gaia The Fierce Knight",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "jinete"
+  },
+  "blackland_fire_dragon": {
+   "nombre": "Blackland Fire Dragon",
+   "tipo": "Dragon",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "invitation_to_a_dark_sleep": {
+   "nombre": "Invitation to a Dark Sleep",
+   "tipo": "Spellcaster",
+   "nivel": 5,
+   "plantilla": "lanzador_manos",
+   "revisar": true
+  },
+  "beast_of_gilfer": {
+   "nombre": "Beast of Gilfer",
+   "tipo": "Fiend",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "the_statue_of_easter_island": {
+   "nombre": "The Statue of Easter Island",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "the_furious_sea_king": {
+   "nombre": "The Furious Sea King",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "drooling_lizard": {
+   "nombre": "Drooling Lizard",
+   "tipo": "Reptile",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "dimensional_warrior": {
+   "nombre": "Dimensional Warrior",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "the_last_warrior_from_another_planet": {
+   "nombre": "The Last Warrior from Another Planet",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "luchador"
+  },
+  "minar": {
+   "nombre": "Minar",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "bicho_rastrero",
+   "revisar": true
+  },
+  "illusionist_faceless_mage": {
+   "nombre": "Illusionist Faceless Mage",
+   "tipo": "Spellcaster",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "mystical_sheep_1": {
+   "nombre": "Mystical Sheep #1",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "the_rock_spirit": {
+   "nombre": "The Rock Spirit",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "insect_queen": {
+   "nombre": "Insect Queen",
+   "tipo": "Insect",
+   "nivel": 7,
+   "plantilla": "bicho_rastrero"
+  },
+  "whiptail_crow": {
+   "nombre": "Whiptail Crow",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "weather_report": {
+   "nombre": "Weather Report",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "criatura_pequena",
+   "revisar": true
+  },
+  "wall_shadow": {
+   "nombre": "Wall Shadow",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "luchador"
+  },
+  "ushi_oni": {
+   "nombre": "Ushi Oni",
+   "tipo": "Fiend",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "serpent_night_dragon": {
+   "nombre": "Serpent Night Dragon",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "serpentino"
+  },
+  "celtic_guardian": {
+   "nombre": "Celtic Guardian",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada",
+   "modelo_hecho": true
+  },
+  "oscillo_hero_2": {
+   "nombre": "Oscillo Hero #2",
+   "tipo": "Thunder",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "electric_snake": {
+   "nombre": "Electric Snake",
+   "tipo": "Thunder",
+   "nivel": 3,
+   "plantilla": "serpentino"
+  },
+  "ancient_elf": {
+   "nombre": "Ancient Elf",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_baculo"
+  },
+  "ocubeam": {
+   "nombre": "Ocubeam",
+   "tipo": "Fairy",
+   "nivel": 5,
+   "plantilla": "espiritu"
+  },
+  "protector_of_the_throne": {
+   "nombre": "Protector of the Throne",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada",
+   "revisar": true
+  },
+  "invader_of_the_throne": {
+   "nombre": "Invader of the Throne",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "guardian_of_the_throne_room": {
+   "nombre": "Guardian of the Throne Room",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "octoberser": {
+   "nombre": "Octoberser",
+   "tipo": "Aqua",
+   "nivel": 5,
+   "plantilla": "acuatico",
+   "revisar": true
+  },
+  "oscillo_hero": {
+   "nombre": "Oscillo Hero",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "sonic_maid": {
+   "nombre": "Sonic Maid",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_arma_larga",
+   "revisar": true
+  },
+  "oni_tank_t_34": {
+   "nombre": "Oni Tank T-34",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina",
+   "modelo_hecho": true
+  },
+  "souls_of_the_forgotten": {
+   "nombre": "Souls of the Forgotten",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "espiritu"
+  },
+  "ryu_kishin_powered": {
+   "nombre": "Ryu-Kishin Powered",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "curse_of_dragon": {
+   "nombre": "Curse of Dragon",
+   "tipo": "Dragon",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "reaper_of_the_cards": {
+   "nombre": "Reaper of the Cards",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "garnecia_elefantis": {
+   "nombre": "Garnecia Elefantis",
+   "tipo": "BeastWarrior",
+   "nivel": 7,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "the_portrait_s_secret": {
+   "nombre": "The Portrait's Secret",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "skull_mariner": {
+   "nombre": "Skull Mariner",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada",
+   "revisar": true
+  },
+  "frog_the_jam": {
+   "nombre": "Frog The Jam",
+   "tipo": "Aqua",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "firegrass": {
+   "nombre": "Firegrass",
+   "tipo": "Plant",
+   "nivel": 2,
+   "plantilla": "objeto"
+  },
+  "morphing_jar_2": {
+   "nombre": "Morphing Jar #2",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "science_soldier": {
+   "nombre": "Science Soldier",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "tirador"
+  },
+  "battle_warrior": {
+   "nombre": "Battle Warrior",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "gadget_soldier": {
+   "nombre": "Gadget Soldier",
+   "tipo": "Machine",
+   "nivel": 6,
+   "plantilla": "maquina"
+  },
+  "garuda_the_wind_spirit": {
+   "nombre": "Garuda the Wind Spirit",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "catapult_turtle": {
+   "nombre": "Catapult Turtle",
+   "tipo": "Aqua",
+   "nivel": 5,
+   "plantilla": "cuadrupedo"
+  },
+  "overdrive": {
+   "nombre": "Overdrive",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "lightning_conger": {
+   "nombre": "Lightning Conger",
+   "tipo": "Thunder",
+   "nivel": 3,
+   "plantilla": "serpentino"
+  },
+  "the_immortal_of_thunder": {
+   "nombre": "The Immortal of Thunder",
+   "tipo": "Thunder",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "grand_tiki_elder": {
+   "nombre": "Grand Tiki Elder",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "the_masked_beast": {
+   "nombre": "The Masked Beast",
+   "tipo": "Fiend",
+   "nivel": 8,
+   "plantilla": "luchador"
+  },
+  "masked_sorcerer": {
+   "nombre": "Masked Sorcerer",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "karate_man": {
+   "nombre": "Karate Man",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "garoozis": {
+   "nombre": "Garoozis",
+   "tipo": "BeastWarrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "karbonala_warrior": {
+   "nombre": "Karbonala Warrior",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "rock_ogre_grotto_1": {
+   "nombre": "Rock Ogre Grotto #1",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "giant_soldier_of_stone": {
+   "nombre": "Giant Soldier of Stone",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "blue_winged_crown": {
+   "nombre": "Blue-Winged Crown",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "machine_king": {
+   "nombre": "Machine King",
+   "tipo": "Machine",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "giga_tech_wolf": {
+   "nombre": "Giga-Tech Wolf",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "parasite_paracide": {
+   "nombre": "Parasite Paracide",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "bicho_rastrero"
+  },
+  "ray_temperature": {
+   "nombre": "Ray & Temperature",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "goddess_of_whim": {
+   "nombre": "Goddess of Whim",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "cannon_soldier": {
+   "nombre": "Cannon Soldier",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "perfectly_ultimate_great_moth": {
+   "nombre": "Perfectly Ultimate Great Moth",
+   "tipo": "Insect",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "giant_flea": {
+   "nombre": "Giant Flea",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "bicho_rastrero"
+  },
+  "battle_steer": {
+   "nombre": "Battle Steer",
+   "tipo": "BeastWarrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "wow_warrior": {
+   "nombre": "Wow Warrior",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "giant_rat": {
+   "nombre": "Giant Rat",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "claw_reacher": {
+   "nombre": "Claw Reacher",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "sinister_serpent": {
+   "nombre": "Sinister Serpent",
+   "tipo": "Reptile",
+   "nivel": 1,
+   "plantilla": "serpentino"
+  },
+  "mystic_tomato": {
+   "nombre": "Mystic Tomato",
+   "tipo": "Plant",
+   "nivel": 4,
+   "plantilla": "criatura_pequena"
+  },
+  "frenzied_panda": {
+   "nombre": "Frenzied Panda",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "killer_needle": {
+   "nombre": "Killer Needle",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "girochin_kuwagata": {
+   "nombre": "Girochin Kuwagata",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "bicho_rastrero"
+  },
+  "king_fog": {
+   "nombre": "King Fog",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "espiritu"
+  },
+  "queen_bird": {
+   "nombre": "Queen Bird",
+   "tipo": "WingedBeast",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "stuffed_animal": {
+   "nombre": "Stuffed Animal",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "peacock": {
+   "nombre": "Peacock",
+   "tipo": "WingedBeast",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "headless_knight": {
+   "nombre": "Headless Knight",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "kumootoko": {
+   "nombre": "Kumootoko",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "bicho_rastrero"
+  },
+  "jellyfish": {
+   "nombre": "Jellyfish",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "crab_turtle": {
+   "nombre": "Crab Turtle",
+   "tipo": "Aqua",
+   "nivel": 8,
+   "plantilla": "cuadrupedo"
+  },
+  "griggle": {
+   "nombre": "Griggle",
+   "tipo": "Plant",
+   "nivel": 1,
+   "plantilla": "criatura_pequena"
+  },
+  "mother_grizzly": {
+   "nombre": "Mother Grizzly",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "sangan": {
+   "nombre": "Sangan",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "kuriboh": {
+   "nombre": "Kuriboh",
+   "tipo": "Fiend",
+   "nivel": 1,
+   "plantilla": "criatura_pequena",
+   "modelo_hecho": true
+  },
+  "great_white": {
+   "nombre": "Great White",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "great_moth": {
+   "nombre": "Great Moth",
+   "tipo": "Insect",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "mikazukinoyaiba": {
+   "nombre": "Mikazukinoyaiba",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "feral_imp": {
+   "nombre": "Feral Imp",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "crimson_sentry": {
+   "nombre": "Crimson Sentry",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "witch_of_the_black_forest": {
+   "nombre": "Witch of the Black Forest",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "kwagar_hercules": {
+   "nombre": "Kwagar Hercules",
+   "tipo": "Insect",
+   "nivel": 6,
+   "plantilla": "bicho_rastrero"
+  },
+  "kuwagata_alpha": {
+   "nombre": "Kuwagata Alpha",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "bicho_rastrero"
+  },
+  "gate_guardian": {
+   "nombre": "Gate Guardian",
+   "tipo": "Warrior",
+   "nivel": 11,
+   "plantilla": "luchador"
+  },
+  "wall_of_illusion": {
+   "nombre": "Wall of Illusion",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "dreamsprite": {
+   "nombre": "Dreamsprite",
+   "tipo": "Plant",
+   "nivel": 2,
+   "plantilla": "lanzador_manos"
+  },
+  "the_stern_mystic": {
+   "nombre": "The Stern Mystic",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "gazelle_the_king_of_mythical_beasts": {
+   "nombre": "Gazelle the King of Mythical Beasts",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "summoner_of_illusions": {
+   "nombre": "Summoner of Illusions",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "mystic_horseman": {
+   "nombre": "Mystic Horseman",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "jinete"
+  },
+  "enchanting_mermaid": {
+   "nombre": "Enchanting Mermaid",
+   "tipo": "Fish",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "steel_ogre_grotto_1": {
+   "nombre": "Steel Ogre Grotto #1",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "queen_of_autumn_leaves": {
+   "nombre": "Queen of Autumn Leaves",
+   "tipo": "Plant",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "pumpking_the_king_of_ghosts": {
+   "nombre": "Pumpking the King of Ghosts",
+   "tipo": "Zombie",
+   "nivel": 6,
+   "plantilla": "espiritu"
+  },
+  "cockroach_knight": {
+   "nombre": "Cockroach Knight",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "niwatori": {
+   "nombre": "Niwatori",
+   "tipo": "WingedBeast",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  },
+  "cosmo_queen": {
+   "nombre": "Cosmo Queen",
+   "tipo": "Spellcaster",
+   "nivel": 8,
+   "plantilla": "lanzador_baculo"
+  },
+  "ancient_lizard_warrior": {
+   "nombre": "Ancient Lizard Warrior",
+   "tipo": "Reptile",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "kotodama": {
+   "nombre": "Kotodama",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "espiritu"
+  },
+  "goblin_attack_force": {
+   "nombre": "Goblin Attack Force",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga",
+   "revisar": true
+  },
+  "hitotsu_me_giant": {
+   "nombre": "Hitotsu-Me Giant",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "psychic_kappa": {
+   "nombre": "Psychic Kappa",
+   "tipo": "Aqua",
+   "nivel": 2,
+   "plantilla": "lanzador_manos"
+  },
+  "cyber_jar": {
+   "nombre": "Cyber Jar",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "cyber_tech_alligator": {
+   "nombre": "Cyber-Tech Alligator",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "maquina"
+  },
+  "kinetic_soldier": {
+   "nombre": "Kinetic Soldier",
+   "tipo": "Machine",
+   "nivel": 3,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "thousand_eyes_restrict": {
+   "nombre": "Thousand-Eyes Restrict",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "espiritu"
+  },
+  "thousand_dragon": {
+   "nombre": "Thousand Dragon",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "succubus_knight": {
+   "nombre": "Succubus Knight",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_espada"
+  },
+  "relinquished": {
+   "nombre": "Relinquished",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "luchador"
+  },
+  "electromagnetic_bagworm": {
+   "nombre": "Electromagnetic Bagworm",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "serpentino"
+  },
+  "punished_eagle": {
+   "nombre": "Punished Eagle",
+   "tipo": "WingedBeast",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "empress_judge": {
+   "nombre": "Empress Judge",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "lanzador_baculo"
+  },
+  "beautiful_headhuntress": {
+   "nombre": "Beautiful Headhuntress",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "thunder_dragon": {
+   "nombre": "Thunder Dragon",
+   "tipo": "Thunder",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "sand_stone": {
+   "nombre": "Sand Stone",
+   "tipo": "Rock",
+   "nivel": 5,
+   "plantilla": "objeto",
+   "revisar": true
+  },
+  "giant_red_seasnake": {
+   "nombre": "Giant Red Seasnake",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "serpentino"
+  },
+  "kagemusha_of_the_blue_flame": {
+   "nombre": "Kagemusha of the Blue Flame",
+   "tipo": "Warrior",
+   "nivel": 2,
+   "plantilla": "guerrero_espada"
+  },
+  "crawling_dragon_2": {
+   "nombre": "Crawling Dragon #2",
+   "tipo": "Dinosaur",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "trial_of_nightmare": {
+   "nombre": "Trial of Nightmare",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "valkyrion_the_magna_warrior": {
+   "nombre": "Valkyrion the Magna Warrior",
+   "tipo": "Rock",
+   "nivel": 8,
+   "plantilla": "guerrero_espada"
+  },
+  "panther_warrior": {
+   "nombre": "Panther Warrior",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "dokuroyaiba": {
+   "nombre": "Dokuroyaiba",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "espiritu"
+  },
+  "doma_the_angel_of_silence": {
+   "nombre": "Doma The Angel of Silence",
+   "tipo": "Fairy",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "4_starred_ladybug_of_doom": {
+   "nombre": "4-Starred Ladybug of Doom",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "bicho_rastrero"
+  },
+  "the_forgiving_maiden": {
+   "nombre": "The Forgiving Maiden",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "island_turtle": {
+   "nombre": "Island Turtle",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "the_wicked_worm_beast": {
+   "nombre": "The Wicked Worm Beast",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "serpentino"
+  },
+  "giant_germ": {
+   "nombre": "Giant Germ",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "espiritu"
+  },
+  "shining_abyss": {
+   "nombre": "Shining Abyss",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "shining_angel": {
+   "nombre": "Shining Angel",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "baron_of_the_fiend_sword": {
+   "nombre": "Baron of the Fiend Sword",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "the_judgement_hand": {
+   "nombre": "The Judgement Hand",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "judge_man": {
+   "nombre": "Judge Man",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "shadow_ghoul": {
+   "nombre": "Shadow Ghoul",
+   "tipo": "Zombie",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "the_13th_grave": {
+   "nombre": "The 13th Grave",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "gilasaurus": {
+   "nombre": "Gilasaurus",
+   "tipo": "Dinosaur",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "jowgen_the_spiritualist": {
+   "nombre": "Jowgen the Spiritualist",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "queen_s_double": {
+   "nombre": "Queen's Double",
+   "tipo": "Warrior",
+   "nivel": 1,
+   "plantilla": "guerrero_espada"
+  },
+  "empress_mantis": {
+   "nombre": "Empress Mantis",
+   "tipo": "Insect",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "jirai_gumo": {
+   "nombre": "Jirai Gumo",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "bicho_rastrero"
+  },
+  "tripwire_beast": {
+   "nombre": "Tripwire Beast",
+   "tipo": "Thunder",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "the_earl_of_demise": {
+   "nombre": "The Earl of Demise",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "guerrero_espada"
+  },
+  "silver_fang": {
+   "nombre": "Silver Fang",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "dark_king_of_the_abyss": {
+   "nombre": "Dark King of the Abyss",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "deepsea_shark": {
+   "nombre": "Deepsea Shark",
+   "tipo": "Fish",
+   "nivel": 5,
+   "plantilla": "acuatico"
+  },
+  "deepsea_warrior": {
+   "nombre": "Deepsea Warrior",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_espada"
+  },
+  "cocoon_of_evolution": {
+   "nombre": "Cocoon of Evolution",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "goddess_with_the_third_eye": {
+   "nombre": "Goddess with the Third Eye",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "bottom_dweller": {
+   "nombre": "Bottom Dweller",
+   "tipo": "Fish",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "jinzo": {
+   "nombre": "Jinzo",
+   "tipo": "Machine",
+   "nivel": 6,
+   "plantilla": "lanzador_manos"
+  },
+  "jinzo_7": {
+   "nombre": "Jinzo #7",
+   "tipo": "Machine",
+   "nivel": 2,
+   "plantilla": "lanzador_manos"
+  },
+  "suijin": {
+   "nombre": "Suijin",
+   "tipo": "Aqua",
+   "nivel": 7,
+   "plantilla": "lanzador_manos"
+  },
+  "hoshiningen": {
+   "nombre": "Hoshiningen",
+   "tipo": "Fairy",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "sky_dragon": {
+   "nombre": "Sky Dragon",
+   "tipo": "Dragon",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "skull_red_bird": {
+   "nombre": "Skull Red Bird",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "skull_knight": {
+   "nombre": "Skull Knight",
+   "tipo": "Spellcaster",
+   "nivel": 7,
+   "plantilla": "guerrero_espada"
+  },
+  "dokurorider": {
+   "nombre": "Dokurorider",
+   "tipo": "Zombie",
+   "nivel": 6,
+   "plantilla": "jinete"
+  },
+  "skelengel": {
+   "nombre": "Skelengel",
+   "tipo": "Fairy",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "star_boy": {
+   "nombre": "Star Boy",
+   "tipo": "Aqua",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "hinotama_soul": {
+   "nombre": "Hinotama Soul",
+   "tipo": "Pyro",
+   "nivel": 2,
+   "plantilla": "espiritu"
+  },
+  "stone_ogre_grotto": {
+   "nombre": "Stone Ogre Grotto",
+   "tipo": "Rock",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "spike_seadra": {
+   "nombre": "Spike Seadra",
+   "tipo": "SeaSerpent",
+   "nivel": 5,
+   "plantilla": "serpentino"
+  },
+  "spikebot": {
+   "nombre": "Spikebot",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "maquina"
+  },
+  "nimble_momonga": {
+   "nombre": "Nimble Momonga",
+   "tipo": "Beast",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "blast_sphere": {
+   "nombre": "Blast Sphere",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "spherous_lady": {
+   "nombre": "Spherous Lady",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "objeto",
+   "revisar": true
+  },
+  "mystical_sheep_2": {
+   "nombre": "Mystical Sheep #2",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "slot_machine": {
+   "nombre": "Slot Machine",
+   "tipo": "Machine",
+   "nivel": 7,
+   "plantilla": "maquina"
+  },
+  "st_joan": {
+   "nombre": "St. Joan",
+   "tipo": "Fairy",
+   "nivel": 7,
+   "plantilla": "guerrero_espada"
+  },
+  "kiseitai": {
+   "nombre": "Kiseitai",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "serpentino"
+  },
+  "faith_bird": {
+   "nombre": "Faith Bird",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "magician_of_faith": {
+   "nombre": "Magician of Faith",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "lanzador_baculo"
+  },
+  "the_all_seeing_white_tiger": {
+   "nombre": "The All-Seeing White Tiger",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "total_defense_shogun": {
+   "nombre": "Total Defense Shogun",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "guerrero_espada",
+   "revisar": true
+  },
+  "ceremonial_bell": {
+   "nombre": "Ceremonial Bell",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "objeto",
+   "revisar": true
+  },
+  "thousand_eyes_idol": {
+   "nombre": "Thousand-Eyes Idol",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "objeto"
+  },
+  "drill_bug": {
+   "nombre": "Drill Bug",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "bicho_rastrero"
+  },
+  "senju_of_the_thousand_hands": {
+   "nombre": "Senju of the Thousand Hands",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "warrior_of_tradition": {
+   "nombre": "Warrior of Tradition",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "guerrero_espada"
+  },
+  "millennium_shield": {
+   "nombre": "Millennium Shield",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "objeto"
+  },
+  "twin_headed_thunder_dragon": {
+   "nombre": "Twin-Headed Thunder Dragon",
+   "tipo": "Thunder",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "sword_hunter": {
+   "nombre": "Sword Hunter",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "guerrero_espada"
+  },
+  "sonic_bird": {
+   "nombre": "Sonic Bird",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "spirit_of_the_breeze": {
+   "nombre": "Spirit of the Breeze",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "insect_soldiers_of_the_sky": {
+   "nombre": "Insect Soldiers of the Sky",
+   "tipo": "Insect",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  },
+  "dark_eyes_illusionist": {
+   "nombre": "Dark-Eyes Illusionist",
+   "tipo": "Spellcaster",
+   "nivel": 2,
+   "plantilla": "lanzador_manos"
+  },
+  "dark_elf": {
+   "nombre": "Dark Elf",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "dark_gray": {
+   "nombre": "Dark Gray",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "dark_zebra": {
+   "nombre": "Dark Zebra",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "meda_bat": {
+   "nombre": "Meda Bat",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "volador_alado"
+  },
+  "dark_necrofear": {
+   "nombre": "Dark Necrofear",
+   "tipo": "Fiend",
+   "nivel": 8,
+   "plantilla": "luchador"
+  },
+  "dark_bat": {
+   "nombre": "Dark Bat",
+   "tipo": "WingedBeast",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  },
+  "zombyra_the_dark": {
+   "nombre": "Zombyra the Dark",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "spear_cretin": {
+   "nombre": "Spear Cretin",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "turtle_tiger": {
+   "nombre": "Turtle Tiger",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "turtle_bird": {
+   "nombre": "Turtle Bird",
+   "tipo": "Aqua",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "big_eye": {
+   "nombre": "Big Eye",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "espiritu"
+  },
+  "tiger_axe": {
+   "nombre": "Tiger Axe",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "dharma_cannon": {
+   "nombre": "Dharma Cannon",
+   "tipo": "Machine",
+   "nivel": 2,
+   "plantilla": "maquina"
+  },
+  "tyhone": {
+   "nombre": "Tyhone",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "jigen_bakudan": {
+   "nombre": "Jigen Bakudan",
+   "tipo": "Pyro",
+   "nivel": 2,
+   "plantilla": "objeto"
+  },
+  "hyozanryu": {
+   "nombre": "Hyozanryu",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "takuhee": {
+   "nombre": "Takuhee",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "takriminos": {
+   "nombre": "Takriminos",
+   "tipo": "SeaSerpent",
+   "nivel": 4,
+   "plantilla": "serpentino"
+  },
+  "marie_the_fallen_one": {
+   "nombre": "Marie the Fallen One",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "bazoo_the_soul_eater": {
+   "nombre": "Bazoo the Soul-Eater",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "tongyo": {
+   "nombre": "Tongyo",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "dancing_elf": {
+   "nombre": "Dancing Elf",
+   "tipo": "Fairy",
+   "nivel": 1,
+   "plantilla": "lanzador_manos"
+  },
+  "performance_of_sword": {
+   "nombre": "Performance of Sword",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "guerrero_espada",
+   "revisar": true
+  },
+  "dancing_fairy": {
+   "nombre": "Dancing Fairy",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "gemini_elf": {
+   "nombre": "Gemini Elf",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "gradius": {
+   "nombre": "Gradius",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "crawling_dragon": {
+   "nombre": "Crawling Dragon",
+   "tipo": "Dragon",
+   "nivel": 5,
+   "plantilla": "cuadrupedo"
+  },
+  "twin_long_rods_2": {
+   "nombre": "Twin Long Rods #2",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "serpentino"
+  },
+  "two_mouth_darkruler": {
+   "nombre": "Two-Mouth Darkruler",
+   "tipo": "Dinosaur",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "maiden_of_the_moonlight": {
+   "nombre": "Maiden of the Moonlight",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "wingweaver": {
+   "nombre": "Wingweaver",
+   "tipo": "Fairy",
+   "nivel": 7,
+   "plantilla": "lanzador_manos"
+  },
+  "dragon_piper": {
+   "nombre": "Dragon Piper",
+   "tipo": "Pyro",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "princess_of_tsurugi": {
+   "nombre": "Princess of Tsurugi",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "turu_purun": {
+   "nombre": "Turu-Purun",
+   "tipo": "Aqua",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "launcher_spider": {
+   "nombre": "Launcher Spider",
+   "tipo": "Machine",
+   "nivel": 7,
+   "plantilla": "maquina"
+  },
+  "disk_magician": {
+   "nombre": "Disk Magician",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "summoned_skull": {
+   "nombre": "Summoned Skull",
+   "tipo": "Fiend",
+   "nivel": 6,
+   "plantilla": "luchador",
+   "modelo_hecho": true
+  },
+  "sorcerer_of_the_doomed": {
+   "nombre": "Sorcerer of the Doomed",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_baculo"
+  },
+  "bubonic_vermin": {
+   "nombre": "Bubonic Vermin",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "corroding_shark": {
+   "nombre": "Corroding Shark",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "acuatico"
+  },
+  "gearfried_the_iron_knight": {
+   "nombre": "Gearfried the Iron Knight",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "steel_scorpion": {
+   "nombre": "Steel Scorpion",
+   "tipo": "Machine",
+   "nivel": 1,
+   "plantilla": "maquina"
+  },
+  "steel_ogre_grotto_2": {
+   "nombre": "Steel Ogre Grotto #2",
+   "tipo": "Machine",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "the_bistro_butcher": {
+   "nombre": "The Bistro Butcher",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "zoa": {
+   "nombre": "Zoa",
+   "tipo": "Fiend",
+   "nivel": 7,
+   "plantilla": "luchador"
+  },
+  "cyber_stein": {
+   "nombre": "Cyber-Stein",
+   "tipo": "Machine",
+   "nivel": 2,
+   "plantilla": "maquina"
+  },
+  "bickuribox": {
+   "nombre": "Bickuribox",
+   "tipo": "Fiend",
+   "nivel": 7,
+   "plantilla": "objeto"
+  },
+  "dunames_dark_witch": {
+   "nombre": "Dunames Dark Witch",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "electric_lizard": {
+   "nombre": "Electric Lizard",
+   "tipo": "Thunder",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "masaki_the_legendary_swordsman": {
+   "nombre": "Masaki the Legendary Swordsman",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "the_legendary_fisherman": {
+   "nombre": "The Legendary Fisherman",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "toon_summoned_skull": {
+   "nombre": "Toon Summoned Skull",
+   "tipo": "Fiend",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "manga_ryu_ran": {
+   "nombre": "Manga Ryu-Ran",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "toon_mermaid": {
+   "nombre": "Toon Mermaid",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "tirador",
+   "revisar": true
+  },
+  "time_wizard": {
+   "nombre": "Time Wizard",
+   "tipo": "Spellcaster",
+   "nivel": 2,
+   "plantilla": "lanzador_baculo"
+  },
+  "greenkappa": {
+   "nombre": "Greenkappa",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "roaring_ocean_snake": {
+   "nombre": "Roaring Ocean Snake",
+   "tipo": "Aqua",
+   "nivel": 6,
+   "plantilla": "serpentino"
+  },
+  "flying_penguin": {
+   "nombre": "Flying Penguin",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "tri_horned_dragon": {
+   "nombre": "Tri-Horned Dragon",
+   "tipo": "Dragon",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "ryu_ran": {
+   "nombre": "Ryu-Ran",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "dragon_seeker": {
+   "nombre": "Dragon Seeker",
+   "tipo": "Fiend",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "dragon_zombie": {
+   "nombre": "Dragon Zombie",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  },
+  "alligator_s_sword_dragon": {
+   "nombre": "Alligator's Sword Dragon",
+   "tipo": "Dragon",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "flying_kamakiri_1": {
+   "nombre": "Flying Kamakiri #1",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "trap_master": {
+   "nombre": "Trap Master",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "dream_clown": {
+   "nombre": "Dream Clown",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "winged_dragon_guardian_of_the_fortress_1": {
+   "nombre": "Winged Dragon, Guardian of the Fortress #1",
+   "tipo": "Dragon",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "tornado_bird": {
+   "nombre": "Tornado Bird",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "kurama": {
+   "nombre": "Kurama",
+   "tipo": "WingedBeast",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  },
+  "trent": {
+   "nombre": "Trent",
+   "tipo": "Plant",
+   "nivel": 5,
+   "plantilla": "objeto"
+  },
+  "misairuzame": {
+   "nombre": "Misairuzame",
+   "tipo": "Fish",
+   "nivel": 5,
+   "plantilla": "acuatico"
+  },
+  "mysterious_puppeteer": {
+   "nombre": "Mysterious Puppeteer",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "needle_worm": {
+   "nombre": "Needle Worm",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "serpentino"
+  },
+  "two_headed_king_rex": {
+   "nombre": "Two-Headed King Rex",
+   "tipo": "Dinosaur",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "three_legged_zombies": {
+   "nombre": "Three-Legged Zombies",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "slate_warrior": {
+   "nombre": "Slate Warrior",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "beastking_of_the_swamps": {
+   "nombre": "Beastking of the Swamps",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "nemuriko": {
+   "nombre": "Nemuriko",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "mystic_clown": {
+   "nombre": "Mystic Clown",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "hard_armor": {
+   "nombre": "Hard Armor",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "harpie_s_brother": {
+   "nombre": "Harpie's Brother",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "darkfire_soldier_1": {
+   "nombre": "Darkfire Soldier #1",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "lava_battleguard": {
+   "nombre": "Lava Battleguard",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "swamp_battleguard": {
+   "nombre": "Swamp Battleguard",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "harpie_s_pet_dragon": {
+   "nombre": "Harpie's Pet Dragon",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "harpie_lady": {
+   "nombre": "Harpie Lady",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "harpie_lady_sisters": {
+   "nombre": "Harpie Lady Sisters",
+   "tipo": "WingedBeast",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "spirit_of_the_harp": {
+   "nombre": "Spirit of the Harp",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "bio_mage": {
+   "nombre": "Bio-Mage",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "lady_of_faith": {
+   "nombre": "Lady of Faith",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_baculo"
+  },
+  "versago_the_destroyer": {
+   "nombre": "Versago the Destroyer",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "destroyer_golem": {
+   "nombre": "Destroyer Golem",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "bombardment_beetle": {
+   "nombre": "Bombardment Beetle",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "bicho_rastrero"
+  },
+  "buster_blader": {
+   "nombre": "Buster Blader",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "guerrero_espada"
+  },
+  "the_unhappy_maiden": {
+   "nombre": "The Unhappy Maiden",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "lanzador_manos"
+  },
+  "patrol_robo": {
+   "nombre": "Patrol Robo",
+   "tipo": "Machine",
+   "nivel": 3,
+   "plantilla": "maquina"
+  },
+  "hane_hane": {
+   "nombre": "Hane-Hane",
+   "tipo": "Beast",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "berfomet": {
+   "nombre": "Berfomet",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "hayabusa_knight": {
+   "nombre": "Hayabusa Knight",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "parrot_dragon": {
+   "nombre": "Parrot Dragon",
+   "tipo": "Dragon",
+   "nivel": 5,
+   "plantilla": "volador_alado"
+  },
+  "amphibian_beast": {
+   "nombre": "Amphibian Beast",
+   "tipo": "Fish",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "hungry_burger": {
+   "nombre": "Hungry Burger",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "criatura_pequena"
+  },
+  "hunter_spider": {
+   "nombre": "Hunter Spider",
+   "tipo": "Insect",
+   "nivel": 5,
+   "plantilla": "bicho_rastrero"
+  },
+  "bean_soldier": {
+   "nombre": "Bean Soldier",
+   "tipo": "Plant",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "banisher_of_the_light": {
+   "nombre": "Banisher of the Light",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "lanzador_baculo"
+  },
+  "fairy_guardian": {
+   "nombre": "Fairy Guardian",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "hysteric_fairy": {
+   "nombre": "Hysteric Fairy",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "big_shield_gardna": {
+   "nombre": "Big Shield Gardna",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "fire_princess": {
+   "nombre": "Fire Princess",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "twin_headed_fire_dragon": {
+   "nombre": "Twin-Headed Fire Dragon",
+   "tipo": "Pyro",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "man_eating_treasure_chest": {
+   "nombre": "Man-Eating Treasure Chest",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "man_eater_bug": {
+   "nombre": "Man-Eater Bug",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "bicho_rastrero"
+  },
+  "hibikime": {
+   "nombre": "Hibikime",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "humanoid_slime": {
+   "nombre": "Humanoid Slime",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "humanoid_worm_drake": {
+   "nombre": "Humanoid Worm Drake",
+   "tipo": "Aqua",
+   "nivel": 7,
+   "plantilla": "luchador"
+  },
+  "flash_assailant": {
+   "nombre": "Flash Assailant",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "hyosube": {
+   "nombre": "Hyosube",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "fire_kraken": {
+   "nombre": "Fire Kraken",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "fire_sorcerer": {
+   "nombre": "Fire Sorcerer",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "dark_witch": {
+   "nombre": "Dark Witch",
+   "tipo": "Fairy",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "red_moon_baby": {
+   "nombre": "Red-Moon Baby",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "exodia_the_forbidden_one": {
+   "nombre": "Exodia the Forbidden One",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "left_leg_of_the_forbidden_one": {
+   "nombre": "Left Leg of the Forbidden One",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "objeto"
+  },
+  "left_arm_of_the_forbidden_one": {
+   "nombre": "Left Arm of the Forbidden One",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "objeto"
+  },
+  "right_leg_of_the_forbidden_one": {
+   "nombre": "Right Leg of the Forbidden One",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "objeto"
+  },
+  "right_arm_of_the_forbidden_one": {
+   "nombre": "Right Arm of the Forbidden One",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "objeto"
+  },
+  "kazejin": {
+   "nombre": "Kazejin",
+   "tipo": "Spellcaster",
+   "nivel": 7,
+   "plantilla": "espiritu"
+  },
+  "ancient_one_of_the_deep_forest": {
+   "nombre": "Ancient One of the Deep Forest",
+   "tipo": "Beast",
+   "nivel": 6,
+   "plantilla": "cuadrupedo"
+  },
+  "swordstalker": {
+   "nombre": "Swordstalker",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "guerrero_espada"
+  },
+  "petit_angel": {
+   "nombre": "Petit Angel",
+   "tipo": "Fairy",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "petit_moth": {
+   "nombre": "Petit Moth",
+   "tipo": "Insect",
+   "nivel": 1,
+   "plantilla": "serpentino"
+  },
+  "petit_dragon": {
+   "nombre": "Petit Dragon",
+   "tipo": "Dragon",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "supply": {
+   "nombre": "Supply",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "criatura_pequena"
+  },
+  "fusionist": {
+   "nombre": "Fusionist",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "flying_fish": {
+   "nombre": "Flying Fish",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "flying_kamakiri_2": {
+   "nombre": "Flying Kamakiri #2",
+   "tipo": "Insect",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "b_skull_dragon": {
+   "nombre": "B. Skull Dragon",
+   "tipo": "Dragon",
+   "nivel": 9,
+   "plantilla": "volador_alado"
+  },
+  "dark_magician": {
+   "nombre": "Dark Magician",
+   "tipo": "Spellcaster",
+   "nivel": 7,
+   "plantilla": "lanzador_baculo",
+   "modelo_hecho": true
+  },
+  "dark_magician_girl": {
+   "nombre": "Dark Magician Girl",
+   "tipo": "Spellcaster",
+   "nivel": 6,
+   "plantilla": "lanzador_baculo",
+   "modelo_hecho": true
+  },
+  "vorse_raider": {
+   "nombre": "Vorse Raider",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "flower_wolf": {
+   "nombre": "Flower Wolf",
+   "tipo": "Beast",
+   "nivel": 5,
+   "plantilla": "cuadrupedo"
+  },
+  "prevent_rat": {
+   "nombre": "Prevent Rat",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "cure_mermaid": {
+   "nombre": "Cure Mermaid",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "blue_eyes_ultimate_dragon": {
+   "nombre": "Blue-Eyes Ultimate Dragon",
+   "tipo": "Dragon",
+   "nivel": 12,
+   "plantilla": "volador_alado"
+  },
+  "blue_eyes_toon_dragon": {
+   "nombre": "Blue-Eyes Toon Dragon",
+   "tipo": "Dragon",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "blue_eyes_white_dragon": {
+   "nombre": "Blue-Eyes White Dragon",
+   "tipo": "Dragon",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "armed_ninja": {
+   "nombre": "Armed Ninja",
+   "tipo": "Warrior",
+   "nivel": 1,
+   "plantilla": "guerrero_espada"
+  },
+  "flame_champion": {
+   "nombre": "Flame Champion",
+   "tipo": "Pyro",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "flame_cerebrus": {
+   "nombre": "Flame Cerebrus",
+   "tipo": "Pyro",
+   "nivel": 6,
+   "plantilla": "cuadrupedo"
+  },
+  "flame_ghost": {
+   "nombre": "Flame Ghost",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "espiritu"
+  },
+  "flame_dancer": {
+   "nombre": "Flame Dancer",
+   "tipo": "Pyro",
+   "nivel": 2,
+   "plantilla": "lanzador_manos"
+  },
+  "bladefly": {
+   "nombre": "Bladefly",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "volador_alado"
+  },
+  "shining_friendship": {
+   "nombre": "Shining Friendship",
+   "tipo": "Fairy",
+   "nivel": 4,
+   "plantilla": "criatura_pequena"
+  },
+  "pale_beast": {
+   "nombre": "Pale Beast",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "basic_insect": {
+   "nombre": "Basic Insect",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "bicho_rastrero"
+  },
+  "baby_dragon": {
+   "nombre": "Baby Dragon",
+   "tipo": "Dragon",
+   "nivel": 3,
+   "plantilla": "volador_alado",
+   "modelo_hecho": true
+  },
+  "hercules_beetle": {
+   "nombre": "Hercules Beetle",
+   "tipo": "Insect",
+   "nivel": 5,
+   "plantilla": "bicho_rastrero"
+  },
+  "penguin_soldier": {
+   "nombre": "Penguin Soldier",
+   "tipo": "Aqua",
+   "nivel": 2,
+   "plantilla": "criatura_pequena",
+   "revisar": true
+  },
+  "penguin_knight": {
+   "nombre": "Penguin Knight",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "guerrero_espada",
+   "revisar": true
+  },
+  "boar_soldier": {
+   "nombre": "Boar Soldier",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "mystical_elf": {
+   "nombre": "Mystical Elf",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "soul_of_purity_and_light": {
+   "nombre": "Soul of Purity and Light",
+   "tipo": "Fairy",
+   "nivel": 6,
+   "plantilla": "lanzador_manos"
+  },
+  "seiyaryu": {
+   "nombre": "Seiyaryu",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "boneheimer": {
+   "nombre": "Boneheimer",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "acuatico"
+  },
+  "lady_assailant_of_flames": {
+   "nombre": "Lady Assailant of Flames",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "charubin_the_fire_knight": {
+   "nombre": "Charubin the Fire Knight",
+   "tipo": "Pyro",
+   "nivel": 3,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "darkfire_soldier_2": {
+   "nombre": "Darkfire Soldier #2",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "flame_swordsman": {
+   "nombre": "Flame Swordsman",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_espada"
+  },
+  "spirit_of_flames": {
+   "nombre": "Spirit of Flames",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "fireyarou": {
+   "nombre": "Fireyarou",
+   "tipo": "Pyro",
+   "nivel": 4,
+   "plantilla": "espiritu"
+  },
+  "flame_manipulator": {
+   "nombre": "Flame Manipulator",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "giant_turtle_who_feeds_on_flames": {
+   "nombre": "Giant Turtle Who Feeds on Flames",
+   "tipo": "Aqua",
+   "nivel": 5,
+   "plantilla": "cuadrupedo"
+  },
+  "white_magical_hat": {
+   "nombre": "White Magical Hat",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "spirit_of_the_books": {
+   "nombre": "Spirit of the Books",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "crass_clown": {
+   "nombre": "Crass Clown",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "darkworld_thorns": {
+   "nombre": "Darkworld Thorns",
+   "tipo": "Plant",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "cyber_soldier_of_darkworld": {
+   "nombre": "Cyber Soldier of Darkworld",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "m_warrior_1": {
+   "nombre": "M-Warrior #1",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "m_warrior_2": {
+   "nombre": "M-Warrior #2",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "alpha_the_magnet_warrior": {
+   "nombre": "Alpha The Magnet Warrior",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "gamma_the_magnet_warrior": {
+   "nombre": "Gamma The Magnet Warrior",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "beta_the_magnet_warrior": {
+   "nombre": "Beta The Magnet Warrior",
+   "tipo": "Rock",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "dissolverock": {
+   "nombre": "Dissolverock",
+   "tipo": "Rock",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "magical_ghost": {
+   "nombre": "Magical Ghost",
+   "tipo": "Zombie",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "magician_of_black_chaos": {
+   "nombre": "Magician of Black Chaos",
+   "tipo": "Spellcaster",
+   "nivel": 8,
+   "plantilla": "lanzador_baculo"
+  },
+  "ancient_lamp": {
+   "nombre": "Ancient Lamp",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "objeto"
+  },
+  "witty_phantom": {
+   "nombre": "Witty Phantom",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "terra_the_terrible": {
+   "nombre": "Terra the Terrible",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "dragoness_the_wicked_knight": {
+   "nombre": "Dragoness the Wicked Knight",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "mushroom_man_2": {
+   "nombre": "Mushroom Man #2",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "ancient_brain": {
+   "nombre": "Ancient Brain",
+   "tipo": "Fiend",
+   "nivel": 3,
+   "plantilla": "luchador",
+   "revisar": true
+  },
+  "the_fiend_megacyber": {
+   "nombre": "The Fiend Megacyber",
+   "tipo": "Warrior",
+   "nivel": 6,
+   "plantilla": "luchador"
+  },
+  "giltia_the_d_knight": {
+   "nombre": "Giltia the D. Knight",
+   "tipo": "Warrior",
+   "nivel": 5,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "maha_vailo": {
+   "nombre": "Maha Vailo",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "neo_the_magic_swordsman": {
+   "nombre": "Neo the Magic Swordsman",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "mystic_lamp": {
+   "nombre": "Mystic Lamp",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "criatura_pequena"
+  },
+  "kojikocy": {
+   "nombre": "Kojikocy",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "maryokutai": {
+   "nombre": "Maryokutai",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "espiritu",
+   "revisar": true
+  },
+  "man_eater": {
+   "nombre": "Man Eater",
+   "tipo": "Plant",
+   "nivel": 2,
+   "plantilla": "objeto"
+  },
+  "mammoth_graveyard": {
+   "nombre": "Mammoth Graveyard",
+   "tipo": "Dinosaur",
+   "nivel": 3,
+   "plantilla": "cuadrupedo"
+  },
+  "the_unfriendly_amazon": {
+   "nombre": "The Unfriendly Amazon",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "mr_volcano": {
+   "nombre": "Mr. Volcano",
+   "tipo": "Pyro",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "blast_juggler": {
+   "nombre": "Blast Juggler",
+   "tipo": "Machine",
+   "nivel": 3,
+   "plantilla": "maquina"
+  },
+  "water_omotics": {
+   "nombre": "Water Omotics",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "aqua_spirit": {
+   "nombre": "Aqua Spirit",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "water_magician": {
+   "nombre": "Water Magician",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "high_tide_gyojin": {
+   "nombre": "High Tide Gyojin",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "three_headed_geedo": {
+   "nombre": "Three-Headed Geedo",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "witch_s_apprentice": {
+   "nombre": "Witch's Apprentice",
+   "tipo": "Spellcaster",
+   "nivel": 2,
+   "plantilla": "lanzador_baculo"
+  },
+  "rabid_horseman": {
+   "nombre": "Rabid Horseman",
+   "tipo": "BeastWarrior",
+   "nivel": 6,
+   "plantilla": "jinete"
+  },
+  "battle_ox": {
+   "nombre": "Battle Ox",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "musician_king": {
+   "nombre": "Musician King",
+   "tipo": "Spellcaster",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "fiend_reflection_2": {
+   "nombre": "Fiend Reflection #2",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "milus_radiant": {
+   "nombre": "Milus Radiant",
+   "tipo": "Beast",
+   "nivel": 1,
+   "plantilla": "criatura_pequena"
+  },
+  "muka_muka": {
+   "nombre": "Muka Muka",
+   "tipo": "Rock",
+   "nivel": 2,
+   "plantilla": "criatura_pequena"
+  },
+  "the_gross_ghost_of_fled_dreams": {
+   "nombre": "The Gross Ghost of Fled Dreams",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "espiritu"
+  },
+  "guardian_of_the_labyrinth": {
+   "nombre": "Guardian of the Labyrinth",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "labyrinth_tank": {
+   "nombre": "Labyrinth Tank",
+   "tipo": "Machine",
+   "nivel": 7,
+   "plantilla": "maquina"
+  },
+  "labyrinth_wall": {
+   "nombre": "Labyrinth Wall",
+   "tipo": "Rock",
+   "nivel": 5,
+   "plantilla": "objeto"
+  },
+  "cyber_saurus": {
+   "nombre": "Cyber Saurus",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "maquina"
+  },
+  "mega_thunderball": {
+   "nombre": "Mega Thunderball",
+   "tipo": "Thunder",
+   "nivel": 2,
+   "plantilla": "espiritu"
+  },
+  "megasonic_eye": {
+   "nombre": "Megasonic Eye",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "maquina"
+  },
+  "mechanical_snail": {
+   "nombre": "Mechanical Snail",
+   "tipo": "Machine",
+   "nivel": 3,
+   "plantilla": "maquina"
+  },
+  "mechanicalchaser": {
+   "nombre": "Mechanicalchaser",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "cyber_falcon": {
+   "nombre": "Cyber Falcon",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "nuvia_the_wicked": {
+   "nombre": "Nuvia the Wicked",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "morphing_jar": {
+   "nombre": "Morphing Jar",
+   "tipo": "Rock",
+   "nivel": 2,
+   "plantilla": "objeto"
+  },
+  "metalzoa": {
+   "nombre": "Metalzoa",
+   "tipo": "Machine",
+   "nivel": 8,
+   "plantilla": "maquina"
+  },
+  "metal_dragon": {
+   "nombre": "Metal Dragon",
+   "tipo": "Machine",
+   "nivel": 6,
+   "plantilla": "maquina"
+  },
+  "metal_fish": {
+   "nombre": "Metal Fish",
+   "tipo": "Machine",
+   "nivel": 5,
+   "plantilla": "maquina"
+  },
+  "melchid_the_four_face_beast": {
+   "nombre": "Melchid the Four-Face Beast",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "luchador"
+  },
+  "mad_sword_beast": {
+   "nombre": "Mad Sword Beast",
+   "tipo": "Dinosaur",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "copycat": {
+   "nombre": "Copycat",
+   "tipo": "Spellcaster",
+   "nivel": 1,
+   "plantilla": "lanzador_manos"
+  },
+  "wodan_the_resident_of_the_forest": {
+   "nombre": "Wodan the Resident of the Forest",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "morinphen": {
+   "nombre": "Morinphen",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "luchador"
+  },
+  "monster_egg": {
+   "nombre": "Monster Egg",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "criatura_pequena"
+  },
+  "yado_karu": {
+   "nombre": "Yado Karu",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "bicho_rastrero"
+  },
+  "yamadron": {
+   "nombre": "Yamadron",
+   "tipo": "Dragon",
+   "nivel": 5,
+   "plantilla": "serpentino"
+  },
+  "castle_of_dark_illusions": {
+   "nombre": "Castle of Dark Illusions",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "saggi_the_dark_clown": {
+   "nombre": "Saggi the Dark Clown",
+   "tipo": "Spellcaster",
+   "nivel": 3,
+   "plantilla": "lanzador_manos"
+  },
+  "mask_of_darkness": {
+   "nombre": "Mask of Darkness",
+   "tipo": "Fiend",
+   "nivel": 2,
+   "plantilla": "espiritu"
+  },
+  "king_of_yamimakai": {
+   "nombre": "King of Yamimakai",
+   "tipo": "Fiend",
+   "nivel": 5,
+   "plantilla": "lanzador_manos"
+  },
+  "yaranzo": {
+   "nombre": "Yaranzo",
+   "tipo": "Zombie",
+   "nivel": 4,
+   "plantilla": "objeto"
+  },
+  "ufo_turtle": {
+   "nombre": "UFO Turtle",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "chimera_the_flying_mythical_beast": {
+   "nombre": "Chimera the Flying Mythical Beast",
+   "tipo": "Beast",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "red_archery_girl": {
+   "nombre": "Red Archery Girl",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "tirador"
+  },
+  "fairy_s_gift": {
+   "nombre": "Fairy's Gift",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "armored_zombie": {
+   "nombre": "Armored Zombie",
+   "tipo": "Zombie",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "ooguchi": {
+   "nombre": "Ooguchi",
+   "tipo": "Aqua",
+   "nivel": 1,
+   "plantilla": "acuatico"
+  },
+  "larvas": {
+   "nombre": "Larvas",
+   "tipo": "Beast",
+   "nivel": 3,
+   "plantilla": "criatura_pequena",
+   "revisar": true
+  },
+  "larvae_moth": {
+   "nombre": "Larvae Moth",
+   "tipo": "Insect",
+   "nivel": 2,
+   "plantilla": "serpentino"
+  },
+  "kaminari_attack": {
+   "nombre": "Kaminari Attack",
+   "tipo": "Thunder",
+   "nivel": 5,
+   "plantilla": "espiritu"
+  },
+  "sanga_of_the_thunder": {
+   "nombre": "Sanga of the Thunder",
+   "tipo": "Thunder",
+   "nivel": 7,
+   "plantilla": "luchador"
+  },
+  "swordsman_of_landstar": {
+   "nombre": "Swordsman of Landstar",
+   "tipo": "Warrior",
+   "nivel": 3,
+   "plantilla": "guerrero_espada"
+  },
+  "la_jinn_the_mystical_genie_of_the_lamp": {
+   "nombre": "La Jinn the Mystical Genie of the Lamp",
+   "tipo": "Fiend",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "liquid_beast": {
+   "nombre": "Liquid Beast",
+   "tipo": "Aqua",
+   "nivel": 3,
+   "plantilla": "cuadrupedo",
+   "revisar": true
+  },
+  "ground_attacker_bugroth": {
+   "nombre": "Ground Attacker Bugroth",
+   "tipo": "Machine",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "rigras_leever": {
+   "nombre": "Rigras Leever",
+   "tipo": "Plant",
+   "nivel": 3,
+   "plantilla": "criatura_pequena",
+   "revisar": true
+  },
+  "little_chimera": {
+   "nombre": "Little Chimera",
+   "tipo": "Beast",
+   "nivel": 2,
+   "plantilla": "cuadrupedo"
+  },
+  "revival_jam": {
+   "nombre": "Revival Jam",
+   "tipo": "Aqua",
+   "nivel": 4,
+   "plantilla": "criatura_pequena"
+  },
+  "barrel_dragon": {
+   "nombre": "Barrel Dragon",
+   "tipo": "Machine",
+   "nivel": 7,
+   "plantilla": "maquina"
+  },
+  "gaia_the_dragon_champion": {
+   "nombre": "Gaia the Dragon Champion",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "jinete"
+  },
+  "green_phantom_king": {
+   "nombre": "Green Phantom King",
+   "tipo": "Plant",
+   "nivel": 3,
+   "plantilla": "lanzador_baculo",
+   "revisar": true
+  },
+  "beaver_warrior": {
+   "nombre": "Beaver Warrior",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "root_water": {
+   "nombre": "Root Water",
+   "tipo": "Fish",
+   "nivel": 3,
+   "plantilla": "luchador"
+  },
+  "kycoo_the_ghost_destroyer": {
+   "nombre": "Kycoo the Ghost Destroyer",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "7_colored_fish": {
+   "nombre": "7 Colored Fish",
+   "tipo": "Fish",
+   "nivel": 4,
+   "plantilla": "acuatico"
+  },
+  "rainbow_flower": {
+   "nombre": "Rainbow Flower",
+   "tipo": "Plant",
+   "nivel": 2,
+   "plantilla": "objeto"
+  },
+  "leogun": {
+   "nombre": "Leogun",
+   "tipo": "Beast",
+   "nivel": 5,
+   "plantilla": "cuadrupedo"
+  },
+  "leghul": {
+   "nombre": "Leghul",
+   "tipo": "Insect",
+   "nivel": 1,
+   "plantilla": "serpentino"
+  },
+  "lesser_dragon": {
+   "nombre": "Lesser Dragon",
+   "tipo": "Dragon",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "red_eyes_b_dragon": {
+   "nombre": "Red-Eyes B. Dragon",
+   "tipo": "Dragon",
+   "nivel": 7,
+   "plantilla": "volador_alado"
+  },
+  "red_eyes_black_metal_dragon": {
+   "nombre": "Red-Eyes Black Metal Dragon",
+   "tipo": "Machine",
+   "nivel": 8,
+   "plantilla": "volador_alado"
+  },
+  "tyhone_2": {
+   "nombre": "Tyhone #2",
+   "tipo": "Dragon",
+   "nivel": 6,
+   "plantilla": "volador_alado"
+  },
+  "lady_panther": {
+   "nombre": "Lady Panther",
+   "tipo": "BeastWarrior",
+   "nivel": 4,
+   "plantilla": "guerrero_arma_larga"
+  },
+  "skull_guardian": {
+   "nombre": "Skull Guardian",
+   "tipo": "Warrior",
+   "nivel": 7,
+   "plantilla": "guerrero_espada"
+  },
+  "lord_of_d": {
+   "nombre": "Lord of D.",
+   "tipo": "Spellcaster",
+   "nivel": 4,
+   "plantilla": "lanzador_manos"
+  },
+  "rocket_warrior": {
+   "nombre": "Rocket Warrior",
+   "tipo": "Warrior",
+   "nivel": 4,
+   "plantilla": "maquina"
+  },
+  "worm_drake": {
+   "nombre": "Worm Drake",
+   "tipo": "Reptile",
+   "nivel": 4,
+   "plantilla": "serpentino"
+  },
+  "skull_servant": {
+   "nombre": "Skull Servant",
+   "tipo": "Zombie",
+   "nivel": 1,
+   "plantilla": "luchador"
+  },
+  "winged_dragon_guardian_of_the_fortress_2": {
+   "nombre": "Winged Dragon, Guardian of the Fortress #2",
+   "tipo": "WingedBeast",
+   "nivel": 4,
+   "plantilla": "volador_alado"
+  },
+  "alligator_s_sword": {
+   "nombre": "Alligator's Sword",
+   "tipo": "Beast",
+   "nivel": 4,
+   "plantilla": "guerrero_espada"
+  },
+  "uraby": {
+   "nombre": "Uraby",
+   "tipo": "Dinosaur",
+   "nivel": 4,
+   "plantilla": "cuadrupedo"
+  },
+  "one_eyed_shield_dragon": {
+   "nombre": "One-Eyed Shield Dragon",
+   "tipo": "Dragon",
+   "nivel": 3,
+   "plantilla": "volador_alado"
+  }
+ }
+}

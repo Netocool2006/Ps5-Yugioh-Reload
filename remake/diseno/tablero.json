@@ -1,0 +1,210 @@
+{
+ "ancho": 19.2,
+ "alto": 14.4,
+ "carta": [
+  1.0,
+  1.45
+ ],
+ "zona": [
+  1.16,
+  1.62
+ ],
+ "zonas": [
+  {
+   "id": "jugador_monstruo_0",
+   "lado": "jugador",
+   "tipo": "monstruo",
+   "x": -5.4,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_magia_0",
+   "lado": "jugador",
+   "tipo": "magia",
+   "x": -5.4,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_monstruo_1",
+   "lado": "jugador",
+   "tipo": "monstruo",
+   "x": -2.7,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_magia_1",
+   "lado": "jugador",
+   "tipo": "magia",
+   "x": -2.7,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_monstruo_2",
+   "lado": "jugador",
+   "tipo": "monstruo",
+   "x": 0.0,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_magia_2",
+   "lado": "jugador",
+   "tipo": "magia",
+   "x": 0.0,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_monstruo_3",
+   "lado": "jugador",
+   "tipo": "monstruo",
+   "x": 2.7,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_magia_3",
+   "lado": "jugador",
+   "tipo": "magia",
+   "x": 2.7,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_monstruo_4",
+   "lado": "jugador",
+   "tipo": "monstruo",
+   "x": 5.4,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_magia_4",
+   "lado": "jugador",
+   "tipo": "magia",
+   "x": 5.4,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_campo",
+   "lado": "jugador",
+   "tipo": "campo",
+   "x": -8.2,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_fusion",
+   "lado": "jugador",
+   "tipo": "fusion",
+   "x": -8.2,
+   "z": 5.5
+  },
+  {
+   "id": "jugador_cementerio",
+   "lado": "jugador",
+   "tipo": "cementerio",
+   "x": 8.2,
+   "z": 2.2
+  },
+  {
+   "id": "jugador_mazo",
+   "lado": "jugador",
+   "tipo": "mazo",
+   "x": 8.2,
+   "z": 5.5
+  },
+  {
+   "id": "rival_monstruo_0",
+   "lado": "rival",
+   "tipo": "monstruo",
+   "x": 5.4,
+   "z": -2.2
+  },
+  {
+   "id": "rival_magia_0",
+   "lado": "rival",
+   "tipo": "magia",
+   "x": 5.4,
+   "z": -5.5
+  },
+  {
+   "id": "rival_monstruo_1",
+   "lado": "rival",
+   "tipo": "monstruo",
+   "x": 2.7,
+   "z": -2.2
+  },
+  {
+   "id": "rival_magia_1",
+   "lado": "rival",
+   "tipo": "magia",
+   "x": 2.7,
+   "z": -5.5
+  },
+  {
+   "id": "rival_monstruo_2",
+   "lado": "rival",
+   "tipo": "monstruo",
+   "x": -0.0,
+   "z": -2.2
+  },
+  {
+   "id": "rival_magia_2",
+   "lado": "rival",
+   "tipo": "magia",
+   "x": -0.0,
+   "z": -5.5
+  },
+  {
+   "id": "rival_monstruo_3",
+   "lado": "rival",
+   "tipo": "monstruo",
+   "x": -2.7,
+   "z": -2.2
+  },
+  {
+   "id": "rival_magia_3",
+   "lado": "rival",
+   "tipo": "magia",
+   "x": -2.7,
+   "z": -5.5
+  },
+  {
+   "id": "rival_monstruo_4",
+   "lado": "rival",
+   "tipo": "monstruo",
+   "x": -5.4,
+   "z": -2.2
+  },
+  {
+   "id": "rival_magia_4",
+   "lado": "rival",
+   "tipo": "magia",
+   "x": -5.4,
+   "z": -5.5
+  },
+  {
+   "id": "rival_campo",
+   "lado": "rival",
+   "tipo": "campo",
+   "x": 8.2,
+   "z": -2.2
+  },
+  {
+   "id": "rival_fusion",
+   "lado": "rival",
+   "tipo": "fusion",
+   "x": 8.2,
+   "z": -5.5
+  },
+  {
+   "id": "rival_cementerio",
+   "lado": "rival",
+   "tipo": "cementerio",
+   "x": -8.2,
+   "z": -2.2
+  },
+  {
+   "id": "rival_mazo",
+   "lado": "rival",
+   "tipo": "mazo",
+   "x": -8.2,
+   "z": -5.5
+  }
+ ]
+}
