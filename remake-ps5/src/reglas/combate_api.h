@@ -48,7 +48,7 @@ struct Situacion {
 	bool vuela{ false };                    // volador (alas): ataca y se defiende en el aire
 	float vuelo{ 0.0f };                    // altura a la que flota en reposo (m; 0 si no vuela). El motor ya la
 	                                        // suma a su cuerpo: la regla solo agrega lo que suba o baje de mas
-	bool rival{ false };                    // esta del lado del rival (los ataques siempre cruzan el tablero)
+	bool ladoRival{ false };                // esta del lado del rival (los ataques siempre cruzan el tablero)
 	uint32_t semilla{ 0 };                  // cambia en cada ataque (para variar chispas, gotas...)
 	glm::vec3 halo{ 1.0f }, nucleo{ 1.0f }; // color de su efecto (de quien ataca; ver color_magia / elemento)
 };
