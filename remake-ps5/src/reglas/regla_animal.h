@@ -8,7 +8,10 @@
 //    se destruye".
 //  - animales de tierra (fila 11): "atacan con embestida; efecto embestida de tierra; defensa cierran los ojos;
 //    derrota caer derrotado al piso".
-// Son figuras rigidas: solo se mueven enteras con la Pose, nunca se deforman.
+// Son figuras rigidas: solo se mueven enteras con la Pose, nunca se deforman. Todo su avance va sobre s.hacia (de
+// frente a la carta que atacan, cualquiera de las de enfrente). Todas las derrotas caen de espaldas como el
+// Guardian (caerDeEspaldas); las de aire primero caen al suelo y luego se rompen rapido en fragmentos.
+// El polvo es humo color tierra (Pincel::humo, con transparencia: no suma luz).
 #pragma once
 #include "combate_api.h"
 
@@ -43,10 +46,34 @@ glm::vec3 posicionEn(const Situacion& s, float t, F mover)
 	return s.base + q.desplazar;
 }
 
-// color de tierra levantada, con un toque del color de quien ataca
+// color de tierra levantada (opaca, algo oscura), con un toque del color de quien ataca
 inline glm::vec3 colorTierra(const Situacion& s)
 {
-	return glm::mix(glm::vec3(0.55f, 0.40f, 0.24f), s.halo, 0.2f);
+	return glm::mix(glm::vec3(0.42f, 0.31f, 0.2f), glm::min(s.halo, glm::vec3(1.0f)), 0.12f);
+}
+
+// segundo en que la espalda del derrotado azota la mesa (ver caerDeEspaldas)
+inline float azotaMesa(const Situacion& s)
+{
+	return MUERE + (s.vuela ? 0.45f : 0.0f) + 0.7f;
+}
+
+// nube de polvo a ras de mesa que se abre y se disipa (u = segundos desde que nace; n bocanadas de humo)
+inline void nubePolvo(const Situacion& s, glm::vec3 suelo, float u, float dura, float tam, int n, Pincel& pincel)
+{
+	if (u < 0.0f || u > dura) {
+		return;
+	}
+	const glm::vec3 tierra = colorTierra(s);
+	const float q = 1.0f - suave(0.3f * dura, dura, u);
+	const float abre = suave(0.0f, 0.8f * dura, u);
+	for (int i = 0; i < n; i++) {
+		const float a = 6.2832f * i / (float)n + azar(s.semilla * 11u + i);
+		const glm::vec3 afuera(cosf(a), 0.0f, sinf(a));
+		const glm::vec3 c = glm::vec3(suelo.x, 0.0f, suelo.z) + afuera * ((0.25f + 0.7f * abre) * tam) +
+			glm::vec3(0.0f, 0.08f + 0.3f * abre * tam, 0.0f);
+		pincel.humo(c, (0.1f + 0.3f * abre) * tam, tierra * (0.8f + 0.4f * azar(s.semilla * 13u + i)), 0.55f * q);
+	}
 }
 
 // destello y chispas del choque (como la embestida), en el pecho del rival
@@ -98,7 +125,7 @@ inline void atacarTierra(const Situacion& s, Pose& p, const EstiloTierra& e)
 	p.brillo += 0.8f * agazapa;
 }
 
-// polvo que levanta al correr (bolas tenues color tierra cerca del suelo, detras de el) + golpe del choque
+// polvo que levanta al correr (humo color tierra cerca del suelo, detras de el) + golpe del choque
 template <class F>
 void efectoTierra(const Situacion& s, glm::vec3 hasta, Pincel& pincel, F mover)
 {
@@ -118,12 +145,12 @@ void efectoTierra(const Situacion& s, glm::vec3 hasta, Pincel& pincel, F mover)
 		if (k <= 0.01f) {
 			continue;
 		}
-		const float r = (0.06f + 0.25f * edad) * glm::min(s.ancho, 2.0f) * 0.6f;   // polvo chico y tenue (suma luz)
+		const float r = (0.1f + 0.35f * edad) * glm::min(s.ancho, 2.0f) * 0.6f;
 		for (int j = 0; j < 2; j++) {
 			const float signo = j == 0 ? -1.0f : 1.0f;
 			const float abre = (0.25f + 0.6f * edad) * s.ancho * (0.6f + 0.4f * azar(s.semilla + 31u * i + j));
 			const glm::vec3 c = glm::vec3(a.x, 0.08f + 0.35f * edad, a.z) + lado * (signo * abre);
-			pincel.bola(c, r, tierra, 0.05f * k);
+			pincel.humo(c, r, tierra, 0.45f * k);
 		}
 	}
 	golpe(s, hasta, pincel, 8);
@@ -135,41 +162,22 @@ void efectoTierra(const Situacion& s, glm::vec3 hasta, Pincel& pincel, F mover)
 		for (int i = 0; i < 6; i++) {
 			const float a = 6.2832f * i / 6.0f + azar(s.semilla * 5u + i);
 			const glm::vec3 c = suelo + glm::vec3(cosf(a), 0.0f, sinf(a)) * ((0.3f + 1.2f * u) * s.ancho * 0.5f) + glm::vec3(0.0f, 0.3f * u, 0.0f);
-			pincel.bola(c, 0.15f + 0.3f * u, tierra, 0.2f * k);
+			pincel.humo(c, 0.15f + 0.3f * u, tierra, 0.6f * k);
 		}
 	}
 }
 
-// cae derrotado al piso (de costado, con un rebote) y se desintegra
+// cae de espaldas como el Guardian (lejos del atacante) y se desintegra
 inline void derrotaTierra(const Situacion& s, Pose& p)
 {
-	p.ojos = 1.0f;
-	p.escala *= 0.93f;
-	p.desplazar -= s.hacia * 0.5f;
-	p.caer = 1.5f * suave(MUERE, MUERE + 0.55f, s.t);
-	const float r = s.t - (MUERE + 0.55f);
-	if (r > 0.0f && r < 0.35f) {
-		p.caer -= 0.12f * sinf(PI * r / 0.35f);
-	}
-	p.desintegrar = suave(DESAPARECE, DESAPARECE + 1.0f, s.t);
+	caerDeEspaldas(s, p);
 }
 
-// polvo al azotar contra el piso
+// polvo cuando la espalda azota la mesa (el cuerpo queda tendido detras de donde estaba)
 inline void efectoDerrotaTierra(const Situacion& s, glm::vec3 donde, Pincel& pincel)
 {
-	const float u = s.t - (MUERE + 0.5f);
-	if (u < 0.0f || u > 0.9f) {
-		return;
-	}
-	const float k = 1.0f - u / 0.9f;
-	const glm::vec3 tierra = colorTierra(s);
-	const glm::vec3 suelo(donde.x, 0.06f, donde.z);
-	for (int i = 0; i < 8; i++) {
-		const float a = 6.2832f * i / 8.0f + azar(s.semilla * 11u + i);
-		const float r = (0.3f + 1.0f * u) * glm::max(s.alto, s.ancho) * 0.4f;
-		const glm::vec3 c = suelo + glm::vec3(cosf(a), 0.0f, sinf(a)) * r + glm::vec3(0.0f, 0.25f * u, 0.0f);
-		pincel.bola(c, 0.08f + 0.15f * u, tierra, 0.06f * k);
-	}
+	const glm::vec3 suelo = glm::vec3(donde.x, 0.0f, donde.z) - s.hacia * (0.4f * s.alto);
+	nubePolvo(s, suelo, s.t - azotaMesa(s), 1.0f, glm::max(s.alto, s.ancho) * 0.45f, 10, pincel);
 }
 
 // ---------------------------------------------------------------- aire
@@ -181,38 +189,65 @@ struct EstiloAire {
 constexpr EstiloAire AIRE_ANIMAL{ 0.0f, 0.07f };
 constexpr EstiloAire AIRE_INSECTO{ 0.025f, 0.0f };
 
-// altura a la que sube antes de la picada (1.2 .. 1.8 m)
-inline float alturaVuelo(const Situacion& s)
+// tiempos del ataque aereo
+constexpr float DESPEGA = 0.65f;   // ya esta a la altura de crucero (si no volaba, sube hasta ahi)
+constexpr float CERCA = 1.2f;      // llego volando cerca del rival
+constexpr float ARRIBA = 1.42f;    // termino de subir sobre el rival: empieza la picada (golpea en IMPACTO)
+
+// m extra sobre la altura de crucero que sube antes de la picada (1.0 .. 1.5)
+inline float subida(const Situacion& s)
 {
-	return 1.2f + 0.6f * azar(s.semilla * 7u + 3u);
+	return 1.0f + 0.5f * azar(s.semilla * 7u + 3u);
 }
 
-// sube, se lanza en picada en arco hasta el rival (llega en IMPACTO), rebota y vuelve volando
+// altura de crucero sobre su reposo: el motor ya suma s.vuelo; si no volaba, despega a ~1 m
+inline float crucero(const Situacion& s)
+{
+	return s.vuelo > 0.05f ? 0.0f : 1.0f;
+}
+
+// en el aire a su altura de vuelo: toma impulso, vuela hacia el rival a la misma altura, cerca de el sube mas y baja
+// en picada a golpearlo (llega en IMPACTO), rebota y vuelve volando a su carta
 inline void atacarAire(const Situacion& s, Pose& p, const EstiloAire& e)
 {
-	const float sube = suave(0.2f, 1.0f, s.t);
-	const float ida = suave(1.0f, IMPACTO, s.t);
-	const float vuelta = suave(IMPACTO + 0.2f, IMPACTO + 1.5f, s.t);
-	const float rebote = sinf(PI * suave(IMPACTO, IMPACTO + 0.45f, s.t));
-	const float h = alturaVuelo(s);
-	const float choque = 0.25f;   // m: altura del cuerpo al chocar
-	p.desplazar += s.hacia * (alcance(s) * ida * (1.0f - vuelta) - 0.35f * sube * (1.0f - ida) - 0.3f * rebote * (1.0f - vuelta));
-	const float yIda = glm::mix(h * sube, choque, powf(ida, 1.6f));
-	p.desplazar.y += yIda * (1.0f - vuelta) + 0.5f * rebote * (1.0f - vuelta) + 0.6f * h * sinf(PI * vuelta);
-	// en el aire: aleteo lento (animal) o zumbido rapido (insecto)
-	const float vuelo = sube * (1.0f - vuelta) + sinf(PI * vuelta);
-	p.desplazar.y += (e.aleteo * sinf(s.t * 9.0f) + e.zumbido * sinf(s.t * 71.0f)) * vuelo;
-	p.desplazar += ladoDe(s) * (e.zumbido * sinf(s.t * 53.0f) * vuelo);
-	p.girar += 1.5f * e.zumbido * sinf(s.t * 47.0f) * vuelo;
-	p.inclinar += -0.25f * sube * (1.0f - ida) + 0.7f * ida * (1.0f - suave(IMPACTO, IMPACTO + 0.3f, s.t)) - 0.3f * rebote * (1.0f - vuelta);
-	p.brillo += 0.6f * sube * (1.0f - ida);
+	const float t = s.t;
+	const float despega = suave(0.2f, DESPEGA, t);
+	const float impulso = despega * (1.0f - suave(DESPEGA, CERCA, t));
+	const float acerca = suave(DESPEGA, CERCA, t);
+	const float sube = suave(CERCA - 0.05f, ARRIBA, t);
+	const float picada = suave(ARRIBA, IMPACTO, t);
+	const float rebote = sinf(PI * suave(IMPACTO, IMPACTO + 0.45f, t));
+	const float regresa = suave(IMPACTO + 0.2f, IMPACTO + 0.8f, t);     // recupera la altura de crucero
+	const float vuelta = suave(IMPACTO + 0.35f, IMPACTO + 1.5f, t);     // vuelve a su carta
+	const float aterriza = suave(IMPACTO + 1.1f, IMPACTO + 1.55f, t);   // baja a su reposo
+	const float hc = crucero(s), h = subida(s);
+	// avance de frente: 75% volando derecho, 10% mientras sube, el resto en la picada
+	const float f = 0.75f * acerca + 0.1f * sube + 0.15f * picada;
+	p.desplazar += s.hacia * (alcance(s) * f * (1.0f - vuelta) - 0.3f * impulso - 0.35f * rebote * (1.0f - vuelta));
+	// altura (sobre su reposo): crucero, sube mas, picada hasta el pecho del rival, rebota y vuelve a crucero
+	const float yChoque = 0.3f - s.vuelo;
+	const float yAntes = hc * despega + h * sube;
+	const float yGolpe = glm::mix(yAntes, yChoque, picada) + 0.5f * rebote;
+	p.desplazar.y += glm::mix(yGolpe, hc * (1.0f - aterriza), regresa);
+	// aleteo/zumbido del cuerpo mientras vuela
+	const float enAire = glm::max(despega * (1.0f - regresa), regresa * (1.0f - aterriza));
+	p.desplazar.y += (e.aleteo * sinf(t * 9.0f) + e.zumbido * sinf(t * 71.0f)) * enAire;
+	p.desplazar += ladoDe(s) * (e.zumbido * sinf(t * 53.0f) * enAire);
+	p.girar += 1.5f * e.zumbido * sinf(t * 47.0f) * enAire;
+	// se inclina: hacia atras al tomar impulso y al subir, de cabeza en la picada, hacia atras al rebotar
+	p.inclinar += -0.25f * impulso + 0.2f * acerca * (1.0f - sube) - 0.35f * sube * (1.0f - picada) +
+		0.8f * picada * (1.0f - suave(IMPACTO, IMPACTO + 0.3f, t)) - 0.3f * rebote * (1.0f - vuelta);
+	p.brillo += 0.6f * impulso + 0.4f * sube * (1.0f - picada);
+	// alas: rapido al volar y al subir, mas rapido en la picada, normal al volver a su reposo
+	const float rapido = suave(0.2f, 0.5f, t) * (1.0f - aterriza);
+	p.aleteo = 1.0f + 1.6f * rapido + 0.6f * sube * (1.0f - regresa);
 }
 
 // estela de aire siguiendo la picada + destello y anillo de viento al chocar
 template <class F>
 void efectoAire(const Situacion& s, glm::vec3 hasta, Pincel& pincel, F mover)
 {
-	const glm::vec3 centro(0.0f, 0.45f * s.alto, 0.0f);
+	const glm::vec3 centro(0.0f, s.vuelo + 0.45f * s.alto, 0.0f);   // el motor suma s.vuelo al cuerpo
 	const float paso = 0.035f;
 	for (int i = 0; i < 12; i++) {
 		const float edad = paso * i;
@@ -249,59 +284,35 @@ void efectoAire(const Situacion& s, glm::vec3 hasta, Pincel& pincel, F mover)
 	}
 }
 
-// caida libre del derrotado volador: altura actual y "toca" = segundos tras MUERE en que toca el suelo
-inline float caidaAire(const Situacion& s, float* toca)
-{
-	const float y0 = s.vuela ? 0.45f : 0.0f;   // si se defendia en el aire, cae desde ahi
-	const float v = 1.6f, g = 6.4f;            // el golpe lo levanta un poco y luego se desploma
-	const float tc = (v + sqrtf(v * v + 2.0f * g * y0)) / g;
-	if (toca) {
-		*toca = tc;
-	}
-	const float u = glm::clamp(s.t - MUERE, 0.0f, tc);
-	return glm::max(0.0f, y0 + v * u - 0.5f * g * u * u);
-}
-
-// se desploma dando vueltas y al tocar el suelo se rompe (desintegracion rapida)
+// cae al suelo (si volaba), cae de espaldas como el Guardian y al azotar la mesa se rompe rapido en fragmentos
 inline void derrotaAire(const Situacion& s, Pose& p)
 {
-	float tc = 0.5f;
-	const float y = caidaAire(s, &tc);
-	const float u = s.t - MUERE;
-	const float cayendo = suave(0.0f, tc, u);
-	p.ojos = 1.0f;
-	p.escala *= 0.93f;
-	p.desplazar -= s.hacia * (0.5f + 0.4f * cayendo);
-	p.desplazar.y += y;
-	p.girar += 2.0f * PI * 0.85f * cayendo;   // da casi una vuelta entera al caer
-	p.caer = 1.3f * cayendo;
-	p.inclinar += 0.4f * sinf(PI * cayendo);
-	p.aplastar *= 1.0f - 0.12f * sinf(PI * suave(tc, tc + 0.2f, u));
-	p.desintegrar = suave(MUERE + tc - 0.05f, MUERE + tc + 0.6f, s.t);
+	caerDeEspaldas(s, p);
+	const float azota = azotaMesa(s);
+	p.desintegrar = glm::max(p.desintegrar, suave(azota + 0.05f, azota + 0.6f, s.t));
 }
 
-// al romperse contra el suelo: destello y fragmentos que saltan en abanico y caen
+// al romperse contra la mesa: polvo, destello y fragmentos que saltan en abanico y caen
 inline void efectoDerrotaAire(const Situacion& s, glm::vec3 donde, Pincel& pincel)
 {
-	float tc = 0.5f;
-	caidaAire(s, &tc);
-	const float w = s.t - (MUERE + tc);
+	const glm::vec3 suelo = glm::vec3(donde.x, 0.0f, donde.z) - s.hacia * (0.4f * s.alto);
+	const float w = s.t - azotaMesa(s);
+	nubePolvo(s, suelo, w, 0.9f, glm::max(s.alto, s.ancho) * 0.4f, 6, pincel);
 	if (w < 0.0f || w > 1.2f) {
 		return;
 	}
 	const float k = 1.0f - w / 1.2f;
-	const glm::vec3 suelo(donde.x, 0.05f, donde.z);
-	const glm::vec3 sale = suelo + glm::vec3(0.0f, 0.2f * s.alto, 0.0f);
+	const glm::vec3 sale = suelo + glm::vec3(0.0f, 0.15f * s.alto, 0.0f);
 	if (w < 0.35f) {
 		const float kd = 1.0f - w / 0.35f;
 		pincel.bola(sale, (0.3f + 1.5f * w) * s.ancho * 0.5f, s.halo, 0.5f * kd);
 		pincel.bola(sale, 0.2f * kd, s.nucleo, 1.6f * kd);
 	}
 	const float g = 9.0f;
-	for (int i = 0; i < 16; i++) {
-		const float a = 6.2832f * i / 16.0f + 0.4f * azar(s.semilla * 13u + i);
-		const float vh = 1.0f + 1.5f * azar(s.semilla * 17u + i);
-		const float vy = 2.0f + 2.0f * azar(s.semilla * 19u + i);
+	for (int i = 0; i < 20; i++) {
+		const float a = 6.2832f * i / 20.0f + 0.4f * azar(s.semilla * 13u + i);
+		const float vh = 1.0f + 1.8f * azar(s.semilla * 17u + i);
+		const float vy = 2.0f + 2.2f * azar(s.semilla * 19u + i);
 		const glm::vec3 dirH(cosf(a), 0.0f, sinf(a));
 		glm::vec3 pos = sale + dirH * (vh * w) + glm::vec3(0.0f, vy * w - 0.5f * g * w * w, 0.0f);
 		pos.y = glm::max(pos.y, 0.03f);
