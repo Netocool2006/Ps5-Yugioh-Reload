@@ -1,0 +1,4 @@
+# finales de linea: LF siempre (los .sh corren en el Docker de Linux)
+* text=auto eol=lf
+*.png binary
+*.xlsx binary
