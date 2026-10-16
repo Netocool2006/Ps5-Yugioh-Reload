@@ -1,5 +1,6 @@
 // Regla 9 del Excel (monstruos de roca): "ataque cuerpo a cuerpo; efecto de demolicion de rocas; defensa: cierran los
 // ojos y reciben impacto; derrota: caer derrotado al piso". Es pesado: se mueve lento, a pasos, y golpea fuerte.
+// Camina de frente al rival (todo su avance es sobre s.hacia); el polvo es humo color tierra (no suma luz).
 #pragma once
 #include "combate_api.h"
 
@@ -46,7 +47,7 @@ struct ReglaRoca : Regla {
 	{
 		const glm::vec3 arriba(0.0f, 1.0f, 0.0f);
 		const glm::vec3 lado = glm::normalize(glm::cross(s.hacia, arriba));
-		const glm::vec3 polvo(0.55f, 0.5f, 0.43f);
+		const glm::vec3 polvo(0.45f, 0.39f, 0.31f);
 
 		// polvo de las pisadas (al final de cada paso)
 		for (int k = 1; k <= 3; k++) {
@@ -60,8 +61,8 @@ struct ReglaRoca : Regla {
 			for (int i = 0; i < 4; i++) {
 				const float a = 6.2832f * i / 4.0f + azar(s.semilla + 17u * k + i);
 				const glm::vec3 afuera(cosf(a), 0.0f, sinf(a));
-				pincel.bola(pie + afuera * (0.35f * s.ancho + 0.8f * e) + arriba * (0.08f + 0.2f * e),
-					(0.06f + 0.15f * e) * s.ancho * 0.5f, polvo, 0.04f * q);   // polvo tenue (suma luz)
+				pincel.humo(pie + afuera * (0.35f * s.ancho + 0.8f * e) + arriba * (0.08f + 0.2f * e),
+					(0.1f + 0.3f * e) * s.ancho * 0.5f, polvo, 0.5f * q);
 			}
 		}
 
@@ -82,7 +83,7 @@ struct ReglaRoca : Regla {
 			const glm::vec3 afuera = s.hacia * (0.6f * cosf(a) + 0.4f) + lado * sinf(a);
 			const glm::vec3 punto = hasta + afuera * (0.2f + 1.0f * suave(0.0f, 1.2f, u)) * s.ancho * 0.6f +
 				arriba * (0.3f * u - 0.25f * azar(s.semilla + 59u * i));
-			pincel.bola(punto, (0.1f + 0.22f * suave(0.0f, 1.0f, u)) * s.ancho * 0.5f, polvo, 0.035f * nube);
+			pincel.humo(punto, (0.16f + 0.35f * suave(0.0f, 1.0f, u)) * s.ancho * 0.5f, polvo * (0.8f + 0.3f * azar(s.semilla + 61u * i)), 0.6f * nube);
 		}
 		// trozos de roca disparados en abanico que caen con gravedad y quedan en el piso
 		for (int i = 0; i < 24; i++) {
@@ -100,8 +101,8 @@ struct ReglaRoca : Regla {
 				punto.y = r;
 			}
 			const float gris = 0.8f + 0.4f * azar(n + 4u);
-			const glm::vec3 piedra = glm::vec3(0.5f, 0.44f, 0.36f) * gris;
-			pincel.bola(punto, r, piedra, (0.25f + 0.25f * azar(n + 5u)) * (1.0f - suave(1.1f, 1.6f, u)));
+			const glm::vec3 piedra = glm::vec3(0.36f, 0.32f, 0.27f) * gris;   // piedra opaca y oscura (no brilla)
+			pincel.humo(punto, r, piedra, 0.95f * (1.0f - suave(1.1f, 1.6f, u)));
 		}
 	}
 
@@ -118,34 +119,25 @@ struct ReglaRoca : Regla {
 		p.inclinar -= 0.12f * suave(0.0f, 0.2f, u);
 	}
 
-	// cae de costado al piso con un golpe seco (rebote corto) y se desintegra
-	void derrota(const Situacion& s, Pose& p) const override
-	{
-		p.ojos = 1.0f;
-		p.desplazar -= s.hacia * 0.3f;
-		p.caer = 1.5f * suave(MUERE, MUERE + 0.45f, s.t);
-		const float r = s.t - (MUERE + 0.45f);
-		if (r > 0.0f && r < 0.2f) {
-			p.caer -= 0.06f * sinf(3.14159f * r / 0.2f);
-		}
-		p.desintegrar = suave(DESAPARECE, DESAPARECE + 1.0f, s.t);
-	}
+	// cae de espaldas (hacia atras, lejos del atacante) como el Guardian y se desintegra
+	void derrota(const Situacion& s, Pose& p) const override { caerDeEspaldas(s, p); }
 
-	// polvo y algunas piedritas al caer al piso
+	// polvo y algunas piedritas cuando la espalda azota la mesa (detras de donde estaba parado)
 	void efectoDerrota(const Situacion& s, glm::vec3 donde, Pincel& pincel) const override
 	{
-		const float u = s.t - (MUERE + 0.45f);
+		const float u = s.t - (MUERE + (s.vuela ? 0.45f : 0.0f) + 0.7f);
+		donde = glm::vec3(donde.x, 0.0f, donde.z) - s.hacia * (0.4f * s.alto);
 		if (u < 0.0f || u > 1.5f) {
 			return;
 		}
 		const glm::vec3 arriba(0.0f, 1.0f, 0.0f);
-		const glm::vec3 polvo(0.55f, 0.5f, 0.43f);
+		const glm::vec3 polvo(0.45f, 0.39f, 0.31f);
 		const float q = 1.0f - suave(0.4f, 1.5f, u);
 		for (int i = 0; i < 12; i++) {
 			const float a = 6.2832f * i / 12.0f + azar(s.semilla + 211u * i);
 			const glm::vec3 afuera(cosf(a), 0.0f, sinf(a));
 			const glm::vec3 punto = donde + afuera * (0.5f * s.ancho + 1.2f * suave(0.0f, 1.2f, u)) + arriba * (0.1f + 0.3f * u);
-			pincel.bola(punto, (0.08f + 0.2f * suave(0.0f, 1.0f, u)) * s.ancho * 0.5f, polvo, 0.035f * q);
+			pincel.humo(punto, (0.14f + 0.35f * suave(0.0f, 1.0f, u)) * s.ancho * 0.5f, polvo * (0.8f + 0.3f * azar(s.semilla + 223u * i)), 0.6f * q);
 		}
 		for (int i = 0; i < 6; i++) {
 			const uint32_t n = s.semilla + 307u * i;
@@ -159,7 +151,7 @@ struct ReglaRoca : Regla {
 				punto = donde + vel * tPiso;
 				punto.y = r;
 			}
-			pincel.bola(punto, r, glm::vec3(0.5f, 0.44f, 0.36f), 0.3f * q);
+			pincel.humo(punto, r, glm::vec3(0.36f, 0.32f, 0.27f), 0.95f * q);
 		}
 	}
 };
