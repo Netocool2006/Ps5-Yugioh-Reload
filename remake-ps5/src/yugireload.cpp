@@ -88,7 +88,8 @@ constexpr bool BACULO_EN_MODELO = true;
 struct DatosLanzador { const char* carta; const char* archivo; float lado; glm::vec3 punta, pie; float cuello, cabeza; glm::vec3 halo, nucleo; };
 const DatosLanzador LANZADORES[] = {
 	{ "dark_magician", "dark_magician_anim.glb", 1.0f, { 0.3873f, 1.7372f, 0.1786f }, { 0.3757f, 0.4257f, 0.1647f }, -8.0f, -14.0f, { 0.18f, 0.45f, 1.6f }, { 0.85f, 0.92f, 1.0f } },   // azul (pedido del usuario)
-	{ "dark_magician_girl", "dark_magician_girl_anim.glb", -1.0f, { -0.3309f, 1.3761f, 0.1470f }, { -0.2706f, 0.4436f, 0.1660f }, -8.0f, -14.0f, { 0.55f, 0.18f, 1.5f }, { 0.92f, 0.82f, 1.0f } },   // morado (el suyo)
+	// Maga v3 (2026-10-16): figura del usuario -> Gemini pose A -> TRELLIS -> esqueleto Meshy; baculo en la mano izquierda (+x)
+	{ "dark_magician_girl", "dark_magician_girl_anim.glb", 1.0f, { 0.3059f, 1.3721f, 0.0856f }, { 0.1733f, 0.5123f, 0.0055f }, -8.0f, -14.0f, { 0.55f, 0.18f, 1.5f }, { 0.92f, 0.82f, 1.0f } },   // morado (el suyo)
 };
 constexpr size_t NUM_LANZADORES = sizeof(LANZADORES) / sizeof(LANZADORES[0]);
 // El baculo es un hueso propio ("Baculo", arma_a_mano.py nuevo:Baculo) que mueve el juego, y las DOS manos lo
