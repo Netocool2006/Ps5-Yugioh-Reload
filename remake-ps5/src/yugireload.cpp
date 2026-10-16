@@ -34,6 +34,7 @@
 #include "reglas/tabla_reglas.h"
 #include "reglas/todas.h"
 #include <algorithm>
+#include "interfaz.h"   // HUD del duelo (LP, visor, fases, manos, puntero): rama interfaz-duelo
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -215,6 +216,7 @@ public:
 	float tAtaque{ -1.0f };
 	struct pad mando{};      // la lectura anterior del control (para ver que se acaba de apretar)
 	float proximoAtaque{ 4.0f };
+	interfaz::Interfaz interfazDuelo;   // todo lo que rodea al tablero (interfaz.h)
 
 	// fotos de la consola a pedido (capturas.txt)
 	std::string carpetaCapturas;          // vacia: sin fotos
@@ -900,6 +902,8 @@ public:
 		const float fovVertical = 2.0f * atanf(tanf(glm::radians(FOV_HORIZONTAL) * 0.5f) / aspecto);
 		uniformData.proyeccion = glm::perspectiveRH(fovVertical, aspecto, 0.1f, 80.0f);
 		uniformData.proyeccion[1][1] *= -1.0f; // Vulkan: Y de la pantalla hacia abajo
+		// el tablero se corre a la derecha de la columna de la interfaz (LP, visor, fases)
+		uniformData.proyeccion = interfazDuelo.ajustarProyeccion(uniformData.proyeccion, (float)width, (float)height);
 		glm::vec3 ojo = OJO;
 		glm::vec3 mira = OBJETIVO;
 		if (respirar) {
@@ -2182,6 +2186,7 @@ public:
 		prepareUniformBuffers();
 		setupDescriptors();
 		preparePipelines();
+		interfazDuelo.preparar(vulkanDevice, queue, swapChain.colorFormat, depthFormat, pipelineCache, getAssetPath(), getShadersPath());
 		prepared = true;
 	}
 
@@ -2239,6 +2244,7 @@ public:
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.escena);
 		dibujarTodo(cmd, true);
 		dibujarVfx(cmd);
+		interfazDuelo.dibujar(cmd, currentBuffer, uniformData.proyeccion * uniformData.vista, (float)width, (float)height);
 		drawUI(cmd);
 		endDynamicRendering(cmd);
 		VK_CHECK_RESULT(vkEndCommandBuffer(cmd));
@@ -2271,6 +2277,7 @@ public:
 		tiempo += frameTimer;
 		avanzarAtaque();
 		actualizarAlas();
+		interfazDuelo.actualizar(mando, frameTimer, !ui.visible);   // el puntero (cruceta/palanca; no usa X ni OPTIONS)
 		revisarCapturas();
 		inspeccionar();
 		revisarCierre();
