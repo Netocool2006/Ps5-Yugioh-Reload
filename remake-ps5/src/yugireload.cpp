@@ -66,6 +66,9 @@ enum { GUARDIAN_REPOSO = 0, GUARDIAN_DEFENSA = 1, GUARDIAN_MUERE = 2 };   // 0,1
 constexpr float T_SUELTA = 1.65f, T_IMPACTO = 1.65f, T_CUBRE = 1.45f, T_FIN_RAYO = 2.9f, T_MUERE = 2.55f;
 // la defensa se congela en su punto de mas cobertura; la muerte empieza ya cayendo (se salta el inicio de pie)
 constexpr float DEFENSA_MAX = 0.5f, MUERE_DESDE = 0.65f;
+// los magos (dark_magician_anim.glb, dark_magician_girl_anim.glb): clip 0 = Idle 3 (243), clip 1 = dying_backwards
+// (189, la misma caida del Guardian; pedido del usuario: "debe caer como el Warrior")
+constexpr uint32_t CLIP_REPOSO_MAGO = 0, CLIP_MUERE_MAGO = 1;
 // armas: largo en metros del personaje (1.8 m) y punto de agarre (0 abajo .. 1 arriba del modelo)
 constexpr float LARGO_BACULO = 1.65f, AGARRE_BACULO = 0.55f;
 constexpr float LARGO_ESPADA = 1.05f, AGARRE_ESPADA = 0.12f;
@@ -153,7 +156,8 @@ public:
 		glm::vec3 munecaIzq{ 0.0f }, munecaDer{ 0.0f };
 		glm::quat giroIzq{}, giroDer{};
 	};
-	struct Lanzador { const DatosLanzador* datos{ nullptr }; int indice{ -1 }; vkglTF::Model modelo; DosManos manos; };
+	// relBaculo: el baculo respecto de la mano que lo agarra (se toma en vida; al morir el baculo sigue a esa mano)
+	struct Lanzador { const DatosLanzador* datos{ nullptr }; int indice{ -1 }; vkglTF::Model modelo; DosManos manos; glm::mat4 relBaculo{ 1.0f }; };
 	std::array<Lanzador, NUM_LANZADORES> lanzadores;
 	size_t cual{ 0 };   // el que ataca ahora; cada ataque pasa al siguiente (el primero es el segundo de la lista)
 
@@ -966,7 +970,11 @@ public:
 	void actualizarPersonajes()
 	{
 		for (Lanzador& l : lanzadores) {
-			posar(l.modelo, MAGO_GUARDIA, tiempo, true);
+			if (muereLanzador(l)) {
+				posar(l.modelo, CLIP_MUERE_MAGO, tAtaque - T_MUERE, false);   // cae de espaldas, como el Guardian
+			} else {
+				posar(l.modelo, CLIP_REPOSO_MAGO, tiempo, true);
+			}
 		}
 		if (!hayAtaque() || objetivo != guardianIdx || tAtaque >= 7.4f) {
 			posar(guardian, GUARDIAN_REPOSO, tiempo, true);
@@ -993,9 +1001,36 @@ public:
 		}
 	}
 
+	bool muereLanzador(const Lanzador& l) const
+	{
+		return hayAtaque() && l.indice == objetivo && tAtaque >= T_MUERE && tAtaque < 7.4f;
+	}
+
+	// muriendo: la animacion mueve todo el cuerpo y los brazos (sin IK); el baculo va pegado a la mano que lo agarraba
+	void baculoEnLaMano(Lanzador& l)
+	{
+		vkglTF::Node* mano = l.modelo.nodeFromName(l.datos->lado > 0.0f ? "LeftHand" : "RightHand");
+		vkglTF::Node* b = l.manos.baculo;
+		if (!mano || !b) {
+			return;
+		}
+		vkglTF::Node* raiz = b->parent;
+		b->translation = glm::vec3(0.0f);
+		b->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		b->scale = glm::vec3(1.0f);
+		b->matrix = (raiz ? glm::inverse(raiz->getMatrix()) : glm::mat4(1.0f)) * mano->getMatrix() * l.relBaculo;
+	}
+
 	void posarLanzador(Lanzador& l, bool ataca)
 	{
 		vkglTF::Model& mago = l.modelo;
+		if (muereLanzador(l)) {
+			baculoEnLaMano(l);
+			for (vkglTF::Node* n : mago.nodes) {
+				n->update();
+			}
+			return;
+		}
 		float cuello = l.datos->cuello, cabeza = l.datos->cabeza;
 #if defined(PS5_HOST_REFERENCE)
 		if (const char* v = getenv("YUGI_CUELLO")) {
@@ -1016,6 +1051,14 @@ public:
 			}
 		}
 		posarBaculo(l, ataca);
+		// en vida se recuerda como esta el baculo respecto de su mano (para cuando caiga)
+		if (vkglTF::Node* mano = mago.nodeFromName(l.datos->lado > 0.0f ? "LeftHand" : "RightHand")) {
+			if (vkglTF::Node* b = l.manos.baculo) {
+				vkglTF::Node* raiz = b->parent;
+				const glm::mat4 M = (raiz ? raiz->getMatrix() : glm::mat4(1.0f)) * b->matrix;
+				l.relBaculo = glm::inverse(mano->getMatrix()) * M;
+			}
+		}
 		for (vkglTF::Node* n : mago.nodes) {
 			n->update();
 		}
@@ -1079,17 +1122,13 @@ public:
 		}
 		glm::mat4 caida(1.0f);
 		if (hayAtaque() && i == objetivo && esLanzador(i)) {
-			// Excel regla 3, derrota: "caer derrotado al piso": retrocede con el golpe y cae de espaldas
+			// Excel regla 3, derrota: "caer derrotado al piso", como el Guardian: retrocede con el golpe y cae de espaldas
 			const glm::vec3 hacia = glm::normalize(base(otro) - base(i));
 			const glm::vec3 lado = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), hacia));
 			const float vuelve = 1.0f - suave(7.4f, 8.2f, tAtaque);
 			const float retro = suave(T_IMPACTO, T_IMPACTO + 0.25f, tAtaque) * vuelve;
-			float caer = glm::radians(84.0f) * suave(T_MUERE, T_MUERE + 0.55f, tAtaque);
-			const float r = tAtaque - (T_MUERE + 0.55f);
-			if (r > 0.0f && r < 0.35f) {
-				caer -= glm::radians(6.0f) * sinf(3.14159f * r / 0.35f);   // rebote al tocar la mesa
-			}
-			caida = glm::translate(glm::mat4(1.0f), -hacia * 0.45f * retro) * glm::rotate(glm::mat4(1.0f), -caer * vuelve, lado);
+			(void)lado;   // la caida la hace la animacion dying_backwards (clip 1); aqui solo el empujon del golpe
+			caida = glm::translate(glm::mat4(1.0f), -hacia * 0.45f * retro);
 		}
 		return glm::translate(glm::mat4(1.0f), base(i) + glm::vec3(0.0f, 0.04f, 0.0f)) * caida *
 		       glm::rotate(glm::mat4(1.0f), giro, glm::vec3(0.0f, 1.0f, 0.0f)) *
