@@ -3,7 +3,9 @@
 # plantilla Vulkan dentro del contenedor arch-ps5, aplica los arreglos a la base (parche_base.py) y compila los
 # shaders. Uso: bash sincronizar.sh
 set -euo pipefail
-src=/compartido/yugi-src
+# YUGI_SRC: carpeta remake-ps5 a compilar (la de una rama/agente); YUGI_ASSETS: modelos (no van al repo)
+src=${YUGI_SRC:-/compartido/yugi-src}
+assets=${YUGI_ASSETS:-/compartido/yugi-src/assets}
 t=/work/PS5_YugiReload
 cp "$src/src/yugireload.cpp" "$t/examples/yugireload/yugireload.cpp"
 cp "$src/escena/escena.h" "$t/examples/yugireload/escena.h"
@@ -19,7 +21,7 @@ done
 cp "$src/third_party/stb_image_write.h" "$t/ps5/src/stb_image_write.h"
 python3 "$src/parche_base.py" "$t"
 mkdir -p "$t/ps5/assets/models/yugi"
-cp "$src"/assets/models/yugi/*.glb "$t/ps5/assets/models/yugi/"
+cp "$assets"/models/yugi/*.glb "$t/ps5/assets/models/yugi/"
 python3 - "$t/ps5/assets.json" <<'PY'
 import json, sys
 p = sys.argv[1]
