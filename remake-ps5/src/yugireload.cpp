@@ -33,6 +33,7 @@
 #include "reglas/combate_api.h"
 #include "reglas/tabla_reglas.h"
 #include "reglas/todas.h"
+#include <algorithm>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -227,7 +228,23 @@ public:
 		VkPipeline escenaEsqueleto{ VK_NULL_HANDLE };
 		VkPipeline efectos{ VK_NULL_HANDLE };      // rayos, chispas y resplandores: suman luz
 		VkPipeline sombraEsqueleto{ VK_NULL_HANDLE };
+		VkPipeline fuego{ VK_NULL_HANDLE };        // efectos de verdad (vfx): transparentes, alfa premultiplicado
+		VkPipeline agua{ VK_NULL_HANDLE };
+		VkPipeline humo{ VK_NULL_HANDLE };
 	} pipelines;
+	// efectos de verdad del cuadro (fuego, agua, charco, humo): se juntan mientras se dibuja y van al final,
+	// despues de lo opaco y de lejos a cerca. Es el empuje de efecto_billboard.vert
+	struct Vfx {
+		glm::vec4 a;    // fuego: base, ancho; los demas: centro, radio
+		glm::vec4 b;    // fuego: punta, intensidad; los demas: color, opacidad
+		glm::vec4 c;    // x: tipo (VFX_*), y: semilla 0..1; tramo de chorro: z opacidad, w tapas (1 inicio, 2 fin)
+		glm::vec4 d{ 0.0f };   // tramo de chorro: color
+		glm::vec4 e{ 0.0f };   // tramo de chorro: la gota anterior y la siguiente (para cortar las uniones)
+		glm::vec4 f{ 0.0f };
+	};
+	// VFX_CHORRO: tramo de agua entre dos gotas seguidas (a y b: centro y radio de cada una), lo arma unirChorros
+	enum { VFX_FUEGO = 0, VFX_LIQUIDO = 1, VFX_CHARCO = 2, VFX_HUMO = 3, VFX_CHORRO = 4 };
+	std::vector<Vfx> colaVfx;
 	VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
 	VkPipelineLayout pipelineLayoutEsqueleto{ VK_NULL_HANDLE };   // + set 2: matrices de los huesos (vkglTF)
 	VkDescriptorSetLayout descriptorSetLayout{ VK_NULL_HANDLE };
@@ -251,6 +268,9 @@ public:
 			vkDestroyPipeline(device, pipelines.escenaEsqueleto, nullptr);
 			vkDestroyPipeline(device, pipelines.efectos, nullptr);
 			vkDestroyPipeline(device, pipelines.sombraEsqueleto, nullptr);
+			vkDestroyPipeline(device, pipelines.fuego, nullptr);
+			vkDestroyPipeline(device, pipelines.agua, nullptr);
+			vkDestroyPipeline(device, pipelines.humo, nullptr);
 			vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 			vkDestroyPipelineLayout(device, pipelineLayoutEsqueleto, nullptr);
 			vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
@@ -651,6 +671,36 @@ public:
 			efectosCI.pDepthStencilState = &sinEscribir;
 			VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &efectosCI, nullptr, &pipelines.efectos));
 		}
+		{
+			// efectos de verdad: un cuadrado sin vertices (efecto_billboard.vert) y alfa premultiplicado
+			// (ONE, ONE_MINUS_SRC_ALPHA): con alfa 0 suma luz (fuego) y con alfa tapa lo de atras (agua, humo)
+			VkPipelineColorBlendAttachmentState premult = blendAttachmentState;
+			premult.blendEnable = VK_TRUE;
+			premult.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+			premult.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			premult.colorBlendOp = VK_BLEND_OP_ADD;
+			premult.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+			premult.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			premult.alphaBlendOp = VK_BLEND_OP_ADD;
+			VkPipelineColorBlendStateCreateInfo mezclaVfx = vks::initializers::pipelineColorBlendStateCreateInfo(1, &premult);
+			VkPipelineDepthStencilStateCreateInfo sinEscribir = depthStencilState;
+			sinEscribir.depthWriteEnable = VK_FALSE;
+			VkPipelineVertexInputStateCreateInfo sinVertices = vks::initializers::pipelineVertexInputStateCreateInfo();
+			const char* frags[3] = { "efecto_fuego", "efecto_agua", "efecto_humo" };
+			VkPipeline* destinos[3] = { &pipelines.fuego, &pipelines.agua, &pipelines.humo };
+			for (int k = 0; k < 3; k++) {
+				std::array<VkPipelineShaderStageCreateInfo, 2> etapas = {
+					loadShader(getShadersPath() + "yugireload/efecto_billboard.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+					loadShader(getShadersPath() + "yugireload/" + frags[k] + ".frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT),
+				};
+				VkGraphicsPipelineCreateInfo vfxCI = pipelineCI;
+				vfxCI.pStages = etapas.data();
+				vfxCI.pVertexInputState = &sinVertices;
+				vfxCI.pColorBlendState = &mezclaVfx;
+				vfxCI.pDepthStencilState = &sinEscribir;
+				VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &vfxCI, nullptr, destinos[k]));
+			}
+		}
 
 		// Mapa de sombras: solo profundidad, con desplazamiento para evitar el "acne". Usa la misma
 		// entrada de vertices que la escena (posicion y normal: la respiracion y el pelo las usan)
@@ -827,6 +877,13 @@ public:
 			const glm::vec3 l = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), h));
 			mira = base(atacante) + glm::vec3(0.0f, 1.25f, 0.0f);
 			ojo = mira + (h * cosf(a) + l * sinf(a)) * 3.2f + glm::vec3(0.0f, 0.5f, 0.0f);
+		}
+		// YUGI_VFX_DEMO=1: camara fija sobre las muestras de efectos (=2: la camara normal del juego)
+		if (const char* v = getenv("YUGI_VFX_DEMO")) {
+			if (atoi(v) == 1) {
+				mira = glm::vec3(-1.8f, 0.9f, -2.2f);
+				ojo = mira + glm::vec3(0.0f, 7.5f, 9.0f);
+			}
 		}
 #endif
 		uniformData.vista = glm::lookAtRH(ojo, mira, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1451,7 +1508,174 @@ public:
 		void tramo(glm::vec3 a, glm::vec3 b, float r, glm::vec3 col, float br) override { v->tramo(c, a, b, r, col, br); }
 		void bola(glm::vec3 p, float r, glm::vec3 col, float br) override { v->bola(c, p, r, col, br); }
 		void relampago(glm::vec3 a, glm::vec3 b, uint32_t sem, float amp, float gr, int ramas) override { v->relampago(c, a, b, sem, amp, gr, ramas); }
+		// los efectos de verdad no se dibujan aqui: van a la cola y se dibujan al final del cuadro (dibujarVfx)
+		void llama(glm::vec3 base, glm::vec3 punta, float ancho, float intensidad, uint32_t semilla) override { v->llama(base, punta, ancho, intensidad, semilla); }
+		void liquido(glm::vec3 p, float r, glm::vec3 col, float op) override { v->agregarVfx(VFX_LIQUIDO, p, r, col, op, 0u); }
+		void charco(glm::vec3 p, float r, glm::vec3 col, float op) override { v->agregarVfx(VFX_CHARCO, p, r, col, op, 0u); }
+		void humo(glm::vec3 p, float r, glm::vec3 col, float op) override { v->agregarVfx(VFX_HUMO, p, r, col, op, 0u); }
 	};
+
+	// ---------------------------------------------------------------- efectos de verdad (vfx)
+	// fuego, agua, charco y humo: cuadrados con shaders propios (efecto_*.frag) que se juntan en colaVfx y se
+	// dibujan al final del cuadro, transparentes, de lejos a cerca (dibujarVfx)
+	void agregarVfx(int tipo, glm::vec3 centro, float radio, glm::vec3 color, float opacidad, uint32_t semilla)
+	{
+		if (radio <= 0.0f || opacidad <= 0.0f) {
+			return;
+		}
+		// sin semilla: el orden de llegada (estable entre cuadros, para que el ruido no salte)
+		const uint32_t sem = semilla != 0u ? semilla : (uint32_t)colaVfx.size() * 7919u + 101u;
+		colaVfx.push_back({ glm::vec4(centro, radio), glm::vec4(color, glm::min(opacidad, 1.0f)), glm::vec4((float)tipo, azar(sem), 0.0f, 0.0f) });
+	}
+
+	void llama(glm::vec3 base, glm::vec3 punta, float ancho, float intensidad, uint32_t semilla)
+	{
+		if (ancho <= 0.0f || intensidad <= 0.0f || glm::distance(base, punta) < 1e-3f) {
+			return;
+		}
+		colaVfx.push_back({ glm::vec4(base, ancho), glm::vec4(punta, glm::min(intensidad, 1.5f)),
+		                    glm::vec4((float)VFX_FUEGO, azar(semilla * 2654435761u + 17u), 0.0f, 0.0f) });
+	}
+
+#if defined(PS5_HOST_REFERENCE)
+	// YUGI_VFX_DEMO=1 (solo PC): muestras de los 4 efectos, siempre visibles en la mitad libre del tablero
+	void demoVfx()
+	{
+		static const bool activo = getenv("YUGI_VFX_DEMO") != nullptr && atoi(getenv("YUGI_VFX_DEMO")) != 0;
+		if (!activo) {
+			return;
+		}
+		const float t = tiempo;
+		const glm::vec3 arriba(0.0f, 1.0f, 0.0f);
+		// llamarada (lanzallamas): lenguas seguidas a lo largo del chorro, cada vez mas anchas y que suben
+		const glm::vec3 boca(-7.4f, 1.0f, -1.2f);
+		const glm::vec3 dir = glm::normalize(glm::vec3(1.0f, 0.06f, -0.12f));
+		for (int k = 0; k < 7; k++) {
+			const float d = 0.42f * (float)k;
+			const glm::vec3 b = boca + dir * d + arriba * (0.03f * d * d);
+			const glm::vec3 p = b + dir * (1.1f + 0.12f * (float)k) + arriba * (0.10f + 0.06f * (float)k);
+			llama(b, p, 0.32f + 0.13f * (float)k, 1.0f - 0.07f * (float)k, 11u + (uint32_t)k);
+		}
+		// hoguera: lenguas de pie sobre la mesa
+		const glm::vec3 hoguera(-5.0f, 0.0f, -4.2f);
+		for (int k = 0; k < 4; k++) {
+			const float a = (float)k * 1.7f;
+			const glm::vec3 b = hoguera + glm::vec3(0.25f * cosf(a), 0.0f, 0.2f * sinf(a));
+			llama(b + glm::vec3(0.0f, 0.1f, 0.0f), b + glm::vec3(0.1f * sinf(a * 3.0f), 1.4f + 0.25f * (float)(k % 2), 0.0f), 0.75f, 1.0f, 40u + (uint32_t)k);
+		}
+		humoSube(hoguera + arriba * 1.6f, glm::vec3(0.32f, 0.31f, 0.30f), 0.85f, 0.0f);
+		// chorro de agua: muchas gotas por una parabola que cae en un charco
+		const glm::vec3 desde(-1.6f, 2.3f, -1.0f), hasta(2.0f, 0.05f, -1.9f);
+		const glm::vec3 azulMar(0.10f, 0.42f, 0.75f);
+		const int N = 24;
+		for (int k = 0; k < N; k++) {
+			const float u = glm::min(((float)k + fmodf(t * 0.9f * (float)N, 1.0f)) / (float)N, 1.0f);
+			const glm::vec3 p = glm::mix(desde, hasta, u) + arriba * (1.1f * 4.0f * u * (1.0f - u) * (1.0f - 0.5f * u));
+			agregarVfx(VFX_LIQUIDO, p, 0.21f - 0.03f * u, azulMar, 0.9f, 300u + (uint32_t)k);
+		}
+		// gotitas que se separan del chorro (sueltas: quedan como esferas)
+		for (int k = 0; k < 8; k++) {
+			const float u = fmodf((float)k * 0.137f + t * 0.7f, 1.0f);
+			const glm::vec3 p = glm::mix(desde, hasta, u) + arriba * (1.1f * 4.0f * u * (1.0f - u) * (1.0f - 0.5f * u));
+			const glm::vec3 fuera(azar(600u + (uint32_t)k) - 0.5f, azar(700u + (uint32_t)k) - 0.3f, azar(800u + (uint32_t)k) - 0.5f);
+			agregarVfx(VFX_LIQUIDO, p + fuera * (0.6f * u), 0.05f, azulMar, 0.9f * (1.0f - u * u), 900u + (uint32_t)k);
+		}
+		// salpicaduras donde cae
+		for (int k = 0; k < 6; k++) {
+			const float edad = fmodf(t * 1.6f + (float)k / 6.0f, 1.0f);
+			const float ang = (float)k * 1.05f + floorf(t * 1.6f + (float)k / 6.0f) * 2.3f;
+			const glm::vec3 p = hasta + glm::vec3(cosf(ang), 0.0f, sinf(ang)) * (0.7f * edad) + arriba * (0.9f * edad * (1.0f - edad));
+			agregarVfx(VFX_LIQUIDO, p, 0.07f * (1.0f - 0.5f * edad), azulMar, 0.9f * (1.0f - edad), 400u + (uint32_t)k);
+		}
+		agregarVfx(VFX_CHARCO, glm::vec3(hasta.x, 0.02f, hasta.z), 1.5f, azulMar, 0.85f, 77u);
+		// polvo que se levanta del suelo
+		humoSube(glm::vec3(3.4f, 0.2f, -4.0f), glm::vec3(0.62f, 0.52f, 0.40f), 0.9f, 0.6f);
+	}
+
+	// columna de humo (o polvo si "bajo" > 0: sube poco y se abre a los lados): bocanadas que se agrandan y se desvanecen
+	void humoSube(glm::vec3 base, glm::vec3 color, float opacidad, float bajo)
+	{
+		for (int k = 0; k < 7; k++) {
+			const float fase = tiempo * 0.22f + (float)k / 7.0f;
+			const float edad = fmodf(fase, 1.0f);
+			const float lado = azar((uint32_t)floorf(fase) * 31u + (uint32_t)k) - 0.5f;
+			const glm::vec3 p = base + glm::vec3(lado * (0.6f + 1.6f * bajo) * edad + 0.5f * edad, (2.6f - 2.2f * bajo) * edad, -0.2f * edad);
+			const float aparece = glm::smoothstep(0.0f, 0.15f, edad) * (1.0f - glm::smoothstep(0.45f, 1.0f, edad));
+			agregarVfx(VFX_HUMO, p, 0.35f + 1.0f * edad, color, opacidad * aparece, 500u + (uint32_t)k * 13u + (uint32_t)floorf(fase) * 7u);
+		}
+	}
+#endif
+
+	// gotas de agua seguidas y cercanas (un chorro hecho de muchos liquido()) se dibujan como un tubo de tramos
+	// (sin "cuentas de collar"); las gotas sueltas quedan como esferas
+	void unirChorros()
+	{
+		const size_t n = colaVfx.size();
+		auto unidas = [&](size_t i) {   // la gota i con la i + 1
+			const Vfx& x = colaVfx[i];
+			const Vfx& y = colaVfx[i + 1];
+			if ((int)x.c.x != VFX_LIQUIDO || (int)y.c.x != VFX_LIQUIDO || glm::distance(glm::vec3(x.b), glm::vec3(y.b)) > 0.05f) {
+				return false;
+			}
+			const float d = glm::distance(glm::vec3(x.a), glm::vec3(y.a));
+			return d > 1e-3f && d < 1.6f * (x.a.w + y.a.w);
+		};
+		std::vector<Vfx> salida;
+		salida.reserve(n);
+		for (size_t i = 0; i < n; i++) {
+			const bool conAnterior = i > 0 && unidas(i - 1);
+			const bool conSiguiente = i + 1 < n && unidas(i);
+			const Vfx& e = colaVfx[i];
+			if (!conAnterior && !conSiguiente) {
+				salida.push_back(e);
+			} else if (conSiguiente) {
+				const Vfx& f = colaVfx[i + 1];
+				const bool sigue = i + 2 < n && unidas(i + 1);
+				const float tapas = (conAnterior ? 0.0f : 1.0f) + (sigue ? 0.0f : 2.0f);
+				const glm::vec4 antes = conAnterior ? colaVfx[i - 1].a : e.a;
+				const glm::vec4 despues = sigue ? colaVfx[i + 2].a : f.a;
+				salida.push_back({ e.a, f.a, glm::vec4((float)VFX_CHORRO, e.c.y, 0.5f * (e.b.w + f.b.w), tapas), glm::vec4(glm::vec3(e.b), 0.0f), antes, despues });
+			}
+		}
+		colaVfx.swap(salida);
+	}
+
+	void dibujarVfx(VkCommandBuffer cmd)
+	{
+#if defined(PS5_HOST_REFERENCE)
+		demoVfx();
+#endif
+		if (colaVfx.empty()) {
+			return;
+		}
+		unirChorros();
+		// los charcos primero (estan en la mesa, debajo de todo); los demas de lejos a cerca
+		const glm::vec3 ojo(uniformData.camara);
+		auto lejania = [&](const Vfx& e) {
+			const glm::vec3 c = (int)e.c.x == VFX_FUEGO || (int)e.c.x == VFX_CHORRO ? 0.5f * (glm::vec3(e.a) + glm::vec3(e.b)) : glm::vec3(e.a);
+			return glm::distance(c, ojo);
+		};
+		std::stable_sort(colaVfx.begin(), colaVfx.end(), [&](const Vfx& x, const Vfx& y) {
+			const bool cx = (int)x.c.x == VFX_CHARCO, cy = (int)y.c.x == VFX_CHARCO;
+			if (cx != cy) {
+				return cx;
+			}
+			return lejania(x) > lejania(y);
+		});
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentBuffer], 0, nullptr);
+		VkPipeline actual = VK_NULL_HANDLE;
+		for (const Vfx& e : colaVfx) {
+			const int tipo = (int)e.c.x;
+			const VkPipeline p = tipo == VFX_FUEGO ? pipelines.fuego : tipo == VFX_HUMO ? pipelines.humo : pipelines.agua;
+			if (p != actual) {
+				vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, p);
+				actual = p;
+			}
+			vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(Vfx), &e);
+			vkCmdDraw(cmd, 6, 1, 0, 0);
+		}
+		colaVfx.clear();
+	}
 
 	void dibujarEfectosRegla(VkCommandBuffer cmd)
 	{
@@ -1847,6 +2071,7 @@ public:
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 		VK_CHECK_RESULT(vkBeginCommandBuffer(cmd, &cmdBufInfo));
 		pasadaSombra(cmd);
+		colaVfx.clear();
 		beginDynamicRendering(cmd);
 		VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
 		vkCmdSetViewport(cmd, 0, 1, &viewport);
@@ -1855,6 +2080,7 @@ public:
 		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentBuffer], 0, nullptr);
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.escena);
 		dibujarTodo(cmd, true);
+		dibujarVfx(cmd);
 		drawUI(cmd);
 		endDynamicRendering(cmd);
 		VK_CHECK_RESULT(vkEndCommandBuffer(cmd));
