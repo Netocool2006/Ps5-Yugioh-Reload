@@ -22,6 +22,9 @@ const ReglaCarta TABLA_REGLAS[] = {
 	{ "summoned_skull", "demonio", { 0.45f, 0.60f, 1.60f }, { 0.82f, 0.84f, 1.00f }, false },   // Summoned Skull (Fiend, DARK)
 	{ "gaia", "arma_mano", { 1.20f, 0.70f, 0.25f }, { 0.94f, 0.86f, 0.79f }, false },   // Gaia The Fierce Knight (Warrior, EARTH)
 	{ "dark_magician_girl", "mistico", { 0.55f, 0.18f, 1.50f }, { 0.84f, 0.78f, 0.98f }, false },   // Dark Magician Girl (Spellcaster, DARK)
+	{ "silver_fang", "animal_tierra", { 1.20f, 0.70f, 0.25f }, { 0.94f, 0.86f, 0.79f }, false },   // Silver Fang (Beast, EARTH)
+	{ "deepsea_shark", "agua", { 0.12f, 0.55f, 1.60f }, { 0.77f, 0.84f, 1.00f }, false },   // Deepsea Shark (Fish, WATER)
+	{ "stone_ogre_grotto", "roca", { 1.20f, 0.70f, 0.25f }, { 0.94f, 0.86f, 0.79f }, false },   // Stone Ogre Grotto (Rock, EARTH)
 };
 
 } // namespace combate

@@ -26,14 +26,20 @@ CAMPO = [  # (zona, carta, modo): el mismo duelo de prueba de construir_tablero.
     ("jugador_monstruo_0", "baby_dragon", "ataque"), ("jugador_monstruo_1", "red_eyes", "ataque"),
     ("jugador_monstruo_2", "dark_magician", "ataque"), ("jugador_monstruo_3", "kuriboh", "defensa"),
     ("jugador_monstruo_4", "dark_magician_girl", "ataque"),
-    ("rival_monstruo_0", "celtic_guardian", "ataque"), ("rival_monstruo_1", "gaia", "ataque"),
-    ("rival_monstruo_2", "summoned_skull", "ataque"), ("rival_monstruo_3", "oni_tank_t_34", "defensa"),
-    ("rival_monstruo_4", "", "abajo_def"),
+    ("rival_monstruo_0", "celtic_guardian", "ataque"), ("rival_monstruo_1", "oni_tank_t_34", "ataque"),
+    ("rival_monstruo_2", "summoned_skull", "ataque"), ("rival_monstruo_3", "deepsea_shark", "ataque"),
+    ("rival_monstruo_4", "stone_ogre_grotto", "ataque"),
     ("jugador_magia_0", "swords_of_revealing_light", "arriba"), ("jugador_magia_1", "", "abajo"),
     ("jugador_magia_3", "", "abajo"), ("rival_magia_1", "mirror_force", "arriba"),
     ("rival_magia_2", "", "abajo"), ("rival_magia_4", "", "abajo"),
     ("jugador_campo", "sogen", "arriba"),
 ]
+# Campo B (solo pruebas en el PC, YUGI_CAMPO=B): otros monstruos del rival para probar sus reglas
+if os.environ.get("YUGI_CAMPO") == "B":
+    CAMPO = [c for c in CAMPO if not c[0].startswith("rival_monstruo")] + [
+        ("rival_monstruo_0", "celtic_guardian", "ataque"), ("rival_monstruo_1", "blue_eyes", "ataque"),
+        ("rival_monstruo_2", "silver_fang", "ataque"), ("rival_monstruo_3", "faith_bird", "ataque"),
+        ("rival_monstruo_4", "", "abajo_def")]
 
 
 def bl(x, z, y=0.0):
